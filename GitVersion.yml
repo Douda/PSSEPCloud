@@ -25,6 +25,7 @@ branches:
     tag: beta
     increment: Minor
     regex: ^dev$
+    source-branches: ['master']
 
 ignore:
   sha: []
