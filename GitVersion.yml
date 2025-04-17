@@ -21,6 +21,10 @@ branches:
     increment: Patch
     regex: (hot)?fix(es)?[\/-]
     source-branches: ['master']
+  dev:
+    tag: beta
+    increment: Minor
+    regex: ^dev$
 
 ignore:
   sha: []
@@ -37,4 +41,3 @@ merge-message-formats: {}
 #   increment: Patch
 #   regex: (hot)?fix(es)?[/-]
 #   source-branches: ['master']
-
