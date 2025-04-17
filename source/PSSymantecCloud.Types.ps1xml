@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Types>
+  <!-- <Type>
+        <Name>SEPCloud.Device-Group</Name>
+        <Members>
+            <ScriptProperty>
+                <Name>parent_name</Name>
+                <GetScriptBlock>
+                    $parent_name = "test"
+                    return $parent_name
+                </GetScriptBlock>
+            </ScriptProperty>
+        </Members>
+    </Type> -->
+    <Type>
+        <Name>SEPCloud.DeviceTransfer</Name>
+        <Members>
+            <ScriptProperty>
+                <Name>device_name</Name>
+                <GetScriptBlock>
+                    $device_name = Get-SEPCloudDeviceDetails -Device_ID $this.device_uid | Select-Object -ExpandProperty name
+                    return $device_name
+                </GetScriptBlock>
+            </ScriptProperty>
+        </Members>
+    </Type>
+    <Type>
+        <Name>SEP.GUPList</Name>
+        <Members>
+            <ScriptProperty>
+                <Name>freeDiskGB</Name>
+                <GetScriptBlock>
+                    $freeDiskGB = [math]::Round($this.freeDisk / 1GB, 2)
+                    return $freeDiskGB
+                </GetScriptBlock>
+            </ScriptProperty>
+            <ScriptProperty>
+                <Name>totalMemGB</Name>
+                <GetScriptBlock>
+                    $totalMemGB = [math]::Round($this.totalMem / 1GB, 3)
+                    return $totalMemGB
+                </GetScriptBlock>
+            </ScriptProperty>
+            <ScriptProperty>
+                <Name>freeMemGB</Name>
+                <GetScriptBlock>
+                    $freeMemGB = [math]::Round($this.freeMem / 1GB, 3)
+                    return $freeMemGB
+                </GetScriptBlock>
+            </ScriptProperty>
+        </Members>
+    </Type>
+</Types>
