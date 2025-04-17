@@ -60,7 +60,7 @@ RequiredModules = @()
 # ScriptsToProcess = @()
 
 # Type files (.ps1xml) to be loaded when importing this module
-    TypesToProcess   = 'PSSymantecCloud.Types.ps1xml'
+    TypesToProcess   = 'PSSEPCloud.Types.ps1xml'
 
 # Format files (.ps1xml) to be loaded when importing this module
 # FormatsToProcess = @()
