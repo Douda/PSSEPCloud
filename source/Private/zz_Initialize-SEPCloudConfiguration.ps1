@@ -8,7 +8,7 @@
 ## TODO make this function private
 
 # Update the data types when loading the module
-Update-TypeData -PrependPath (Join-Path -Path $PSScriptRoot -ChildPath 'PSSymantecCloud.Types.ps1xml')
+Update-TypeData -PrependPath (Join-Path -Path $PSScriptRoot -ChildPath 'PSSEPCloud.Types.ps1xml')
 
 # The credentials used to authenticate to the SES Cloud API
 [string] $script:Credential = $null # string type used as credentials is OAuth2 token
