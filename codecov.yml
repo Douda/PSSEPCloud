@@ -1,5 +1,5 @@
 codecov:
-  require_ci_to_pass: no
+  require_ci_to_pass: false
   # master should be the baseline for reporting
   branch: main
 
@@ -28,4 +28,3 @@ coverage:
 # example a deprecated function where tests has been removed.
 #ignore:
 #  - 'source/Public/Get-Deprecated.ps1'
-
