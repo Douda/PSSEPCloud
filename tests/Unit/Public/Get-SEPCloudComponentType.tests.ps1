@@ -27,7 +27,6 @@ Describe 'Get-SEPCloudComponentType' {
                 data        = @(1..1000)
             }
         }
-
     }
 
     Context 'Return values' {
