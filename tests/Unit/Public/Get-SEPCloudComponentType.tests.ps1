@@ -1,71 +1,53 @@
 BeforeAll {
-    $script:moduleName = '<% $PLASTER_PARAM_ModuleName %>'
+    $script:moduleName = 'PSSEPCloud'
+    $ProjectPath = "$PSScriptRoot/../../.." | Convert-Path
 
-    # If the module is not found, run the build task 'noop'.
-    if (-not (Get-Module -Name $script:moduleName -ListAvailable))
-    {
-        # Redirect all streams to $null, except the error stream (stream 2)
-        & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
-    }
+    # Redirect all streams to $null, except the error stream (stream 2)
+    & "$ProjectPath/build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
 
-    # Re-import the module using force to get any code changes between runs.
-    Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
-
-    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    # Not Forcing module import
+    # See reasons behind Pester v5 : https://github.com/pester/Pester/discussions/2109
+    # Requires to build module prior running Pester
+    Import-Module -Name $script:moduleName -ErrorAction 'Stop'
 }
 
 AfterAll {
-    $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
-
     Remove-Module -Name $script:moduleName
 }
 
-Describe Get-Something {
+
+Describe 'Get-SEPCloudComponentType' {
+    BeforeAll {
+        # Mock Private functions (requires -ModuleName for Pester v5)
+        Mock Test-SEPCloudConnection -ModuleName $script:moduleName -MockWith { $true }
+        Mock Submit-Request -ModuleName $script:moduleName -MockWith {
+            return [PSCustomObject]@{
+                total       = 1000
+                total_count = 1000
+                data        = @(1..1000)
+            }
+        }
+
+    }
 
     Context 'Return values' {
-        BeforeEach {
-            $return = Get-Something -Data 'value'
+        BeforeAll {}
+
+        It 'Returns a list of objects' {
+            $result = Get-SEPCloudComponentType -ComponentType "network-ips"
+            ($result | Measure-Object).Count | Should -Be 1000
         }
 
-        It 'Returns a single object' {
-            ($return | Measure-Object).Count | Should -Be 1
-        }
-
-    }
-
-    Context 'Pipeline' {
-        It 'Accepts values from the pipeline by value' {
-            $return = 'value1', 'value2' | Get-Something
-
-            $return[0] | Should -Be 'value1'
-            $return[1] | Should -Be 'value2'
-        }
-
-        It 'Accepts value from the pipeline by property name' {
-            $return = 'value1', 'value2' | ForEach-Object {
-                [PSCustomObject]@{
-                    Data = $_
-                    OtherProperty = 'other'
+        It 'hit pagination' {
+            Mock Submit-Request -ModuleName $script:moduleName -MockWith {
+                return [PSCustomObject]@{
+                    total       = 2000
+                    total_count = 2000
+                    data        = @(1..1000)
                 }
-            } | Get-Something
-
-
-            $return[0] | Should -Be 'value1'
-            $return[1] | Should -Be 'value2'
+            }
+            Get-SEPCloudComponentType -ComponentType "network-ips"
+            Should -Invoke -CommandName Submit-Request -ModuleName $script:moduleName -Times 2
         }
-    }
-
-    Context 'ShouldProcess' {
-        It 'Supports WhatIf' {
-            (Get-Command Get-Something).Parameters.ContainsKey('WhatIf') | Should -Be $true
-            { Get-Something -Data 'value' -WhatIf } | Should -Not -Throw
-        }
-
-
     }
 }
-
