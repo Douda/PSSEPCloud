@@ -63,11 +63,9 @@ function Get-SEPCloudComponentType
         $result = Submit-Request -uri $uri -header $script:SEPCloudConnection.header -method $($resources.Method) -body $body
 
         # Test if pagination required
-        if (($result.total -gt $result.data.count) -or ($result.total_count -gt $result.data.count))
-        {
+        if (($result.total -gt $result.data.count) -or ($result.total_count -gt $result.data.count)) {
             Write-Verbose -Message "Result limits hit. Retrieving remaining data based on pagination"
-            do
-            {
+            do {
                 # Update offset query param for pagination
                 $offset = $result.data.count
                 $uri = New-URIString -endpoint ($resources.URI) -id $id
@@ -78,10 +76,29 @@ function Get-SEPCloudComponentType
         }
 
         # apply correct PSType based on the 4 possible results options
-        if ($null -ne $result.data.identification[0]) { $resources.ObjectTName = "SEPCloud.adapter" }
-        elseif ($null -ne $result.data.classifications[0]) { $resources.ObjectTName = "SEPCloud.ips_metadata" }
-        elseif ($null -ne $result.data.services[0]) { $resources.ObjectTName = "SEPCloud.network-services" }
-        elseif ($null -ne $result.data.hosts[0]) { $resources.ObjectTName = "SEPCloud.host-group" }
+        # Define a hashtable to map properties to their corresponding PSTypeName
+        $typeMapping = @{
+            identification  = "SEPCloud.adapter"
+            classifications = "SEPCloud.ips_metadata"
+            services        = "SEPCloud.network-services"
+            hosts           = "SEPCloud.host-group"
+        }
+
+        # Function to check if a property has meaningful data
+        # For some reason, when using if statement count gt 0 still shows true with no data
+        function Test-MeaningfulData {
+            param ([object]$data)
+            return $null -ne $data -and ($data.Count -gt 0 -or -not [string]::IsNullOrEmpty($data))
+        }
+
+        # Iterate over the mapping to determine the correct PSTypeName
+        foreach ($property in $typeMapping.Keys) {
+            if (Test-MeaningfulData -data $result.data.$property) {
+                $resources.ObjectTName = $typeMapping[$property]
+                break
+            }
+        }
+
 
         # Apply correct format only after knowing which PSType to apply above
         $result = Test-ReturnFormat -result $result -location $resources.Result
