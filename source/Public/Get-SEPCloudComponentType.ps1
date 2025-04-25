@@ -53,7 +53,7 @@ function Get-SEPCloudComponentType
     process
     {
         # changing "Content-Type" header specifically for this query, otherwise 415 : unsupported media type
-        $script:SEPCloudConnection.header += @{ 'Content-Type' = 'application/json' }
+        $script:SEPCloudConnection.header['Content-Type'] = 'application/json'
 
         $uri = New-URIString -endpoint ($resources.URI) -id $ComponentType
         $uri = Test-QueryParam -querykeys ($resources.Query.Keys) -parameters ((Get-Command $function).Parameters.Values) -uri $uri
