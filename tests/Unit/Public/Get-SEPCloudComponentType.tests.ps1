@@ -48,5 +48,33 @@ Describe 'Get-SEPCloudComponentType' {
             Get-SEPCloudComponentType -ComponentType "network-ips"
             Should -Invoke -CommandName Submit-Request -ModuleName $script:moduleName -Times 2
         }
+
+        Context 'test subgroup types' {
+            BeforeAll {}
+
+            $testCases = @(
+                @{ ComponentType = 'network-ips'; PSTypeName = "SEPCloud.ips_metadata"; sampleData = ([PSCustomObject]@{ classifications = "classifications" }) },
+                @{ ComponentType = 'host-groups'; PSTypeName = "SEPCloud.host-group"; sampleData = ([PSCustomObject]@{ hosts = "hosts" }) },
+                @{ ComponentType = 'network-adapters'; PSTypeName = "SEPCloud.adapter"; sampleData = ([PSCustomObject]@{ identification = "identification" }) },
+                @{ ComponentType = 'network-services'; PSTypeName = "SEPCloud.network-services"; sampleData = ([PSCustomObject]@{ services = "services" }) }
+            )
+
+            It "Should return objects of type '<PSTypeName>' when ComponentType is '<ComponentType>'" -TestCases $testCases {
+                param ($ComponentType, $PSTypeName, $sampleData)
+
+                Mock Submit-Request -ModuleName $script:moduleName -ParameterFilter { $ComponentType -eq $ComponentType } -MockWith {
+                    param ($ComponentType)
+
+                    return [PSCustomObject]@{
+                        total       = $data.Count
+                        total_count = $data.Count
+                        data        = $sampleData
+                    }
+                }
+
+                $result = Get-SEPCloudComponentType -ComponentType $ComponentType
+                $result.PSObject.TypeNames | Should -Contain $PSTypeName  # Check that all items in the data array are of the correct PSTypeName
+            }
+        }
     }
 }
