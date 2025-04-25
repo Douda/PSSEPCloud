@@ -85,7 +85,7 @@ function Get-SEPCloudComponentType
         }
 
         # Function to check if a property has meaningful data
-        # For some reason, when using if statement count gt 0 still shows true with no data
+        # For some reason, when using if statement count gt 0 still shows true with no data, maybe empty strings
         function Test-MeaningfulData {
             param ([object]$data)
             return $null -ne $data -and ($data.Count -gt 0 -or -not [string]::IsNullOrEmpty($data))
@@ -99,11 +99,8 @@ function Get-SEPCloudComponentType
             }
         }
 
-
         # Apply correct format only after knowing which PSType to apply above
         $result = Test-ReturnFormat -result $result -location $resources.Result
-
-        # Setting PSType to the correct type
         $result = Set-ObjectTypeName -TypeName $resources.ObjectTName -result $result
 
         # Removing "Content-Type: application/json" header
