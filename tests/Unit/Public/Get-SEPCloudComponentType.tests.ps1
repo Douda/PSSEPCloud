@@ -37,18 +37,6 @@ Describe 'Get-SEPCloudComponentType' {
             ($result | Measure-Object).Count | Should -Be 1000
         }
 
-        It 'hit pagination' {
-            Mock Submit-Request -ModuleName $script:moduleName -MockWith {
-                return [PSCustomObject]@{
-                    total       = 2000
-                    total_count = 2000
-                    data        = @(1..1000)
-                }
-            }
-            Get-SEPCloudComponentType -ComponentType "network-ips"
-            Should -Invoke -CommandName Submit-Request -ModuleName $script:moduleName -Times 2
-        }
-
         Context 'test subgroup types' {
             BeforeAll {}
 
@@ -73,8 +61,54 @@ Describe 'Get-SEPCloudComponentType' {
                 }
 
                 $result = Get-SEPCloudComponentType -ComponentType $ComponentType
-                $result.PSObject.TypeNames | Should -Contain $PSTypeName  # Check that all items in the data array are of the correct PSTypeName
+                $result.PSObject.TypeNames | Should -Contain $PSTypeName
             }
         }
     }
+
+    Context 'Internal logic' {
+        BeforeAll {
+            # Initialize a variable to capture the parameters
+            $script:submitRequestParams = @()
+
+            Mock Submit-Request -ModuleName $script:moduleName -MockWith {
+                param ($uri, $header, $method, $body)
+                # Capture the parameters
+                $script:submitRequestParams += [PSCustomObject]@{
+                    Uri    = $uri
+                    Header = $header
+                    Method = $method
+                    Body   = $body
+                }
+
+                # Return mock data
+                return [PSCustomObject]@{
+                    total       = 2000
+                    total_count = 2000
+                    data        = @(1..1000)
+                }
+            }
+        }
+
+        It 'hit pagination' {
+            Get-SEPCloudComponentType -ComponentType "network-ips"
+            Should -Invoke -CommandName Submit-Request -ModuleName $script:moduleName -Times 2
+        }
+
+        It 'correct pagination offsetting' {
+            # Clear the captured parameters before the test
+            $script:submitRequestParams = @()
+
+            Get-SEPCloudComponentType -ComponentType "network-ips"
+
+            # Check that Submit-Request was called twice
+            $script:submitRequestParams.Count | Should -Be 2
+
+            # Check the offset in the second call
+            $secondCallUri = $script:submitRequestParams[1].Uri
+            $secondCallOffset = [regex]::Match($secondCallUri, 'offset=(\d+)').Groups[1].Value
+            $secondCallOffset | Should -Be 1000
+        }
+    }
+
 }
