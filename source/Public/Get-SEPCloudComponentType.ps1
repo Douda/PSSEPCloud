@@ -77,25 +77,14 @@ function Get-SEPCloudComponentType
             } until (($result.data.count -ge $result.total) -or ($result.data.count -ge $result.total_count))
         }
 
-        $result = Test-ReturnFormat -result $result -location $resources.Result
-
         # apply correct PSType based on the 4 possible results options
-        if ($null -ne $result.identification)
-        {
-            $resources.ObjectTName = "SEPCloud.adapter"
-        }
-        if ($null -ne $result.classifications)
-        {
-            $resources.ObjectTName = "SEPCloud.ips_metadata"
-        }
-        if ($null -ne $result.services)
-        {
-            $resources.ObjectTName = "SEPCloud.network-services"
-        }
-        if ($null -ne $result.hosts)
-        {
-            $resources.ObjectTName = "SEPCloud.host-group"
-        }
+        if ($null -ne $result.data.identification[0]) { $resources.ObjectTName = "SEPCloud.adapter" }
+        elseif ($null -ne $result.data.classifications[0]) { $resources.ObjectTName = "SEPCloud.ips_metadata" }
+        elseif ($null -ne $result.data.services[0]) { $resources.ObjectTName = "SEPCloud.network-services" }
+        elseif ($null -ne $result.data.hosts[0]) { $resources.ObjectTName = "SEPCloud.host-group" }
+
+        # Apply correct format only after knowing which PSType to apply above
+        $result = Test-ReturnFormat -result $result -location $resources.Result
 
         # Setting PSType to the correct type
         $result = Set-ObjectTypeName -TypeName $resources.ObjectTName -result $result
