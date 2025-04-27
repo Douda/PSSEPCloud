@@ -1,4 +1,4 @@
-function Build-QueryURI
+function New-QueryURI
 {
     <#
     .SYNOPSIS
@@ -18,7 +18,7 @@ function Build-QueryURI
             pageIndex = 1
             pageSize  = 100
         }
-        $URI = Build-QueryURI -BaseURI $BaseURI -QueryStrings $QueryStrings
+        $URI = New-QueryURI -BaseURI $BaseURI -QueryStrings $QueryStrings
 
         This example will :
         - Construct a URI from the base URI "https://Server01:8446/sepm/api/v1/computers"

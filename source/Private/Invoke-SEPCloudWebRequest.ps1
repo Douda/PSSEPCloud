@@ -83,7 +83,7 @@ function Invoke-SEPCloudWebRequest
         if ($queryStrings.Count -gt 0)
         {
             # Construct the URI
-            $uri = Build-QueryURI -BaseURI $uri -QueryStrings $queryStrings
+            $uri = New-QueryURI -BaseURI $uri -QueryStrings $queryStrings
         }
 
         # Initial request
@@ -92,8 +92,7 @@ function Invoke-SEPCloudWebRequest
         $initialRequest.AllowAutoRedirect = $false
 
         # Add body
-        if ($body.Count -gt 0)
-        {
+        if ($body.Count -gt 0) {
             $initialRequest.ContentType = "application/json"
             $json = $body | ConvertTo-Json -Depth 100
             $bytes = [System.Text.Encoding]::UTF8.GetBytes($json)
@@ -104,26 +103,22 @@ function Invoke-SEPCloudWebRequest
         }
 
         # Add headers
-        foreach ($header in $Headers.GetEnumerator())
-        {
+        foreach ($header in $Headers.GetEnumerator()) {
             $initialRequest.Headers.Add($header.Key, $header.Value)
         }
 
         # Send the initial request
-        try
-        {
+        try {
             $inititalResponse = $initialRequest.GetResponse();
             Write-Verbose -Message "URI = $($inititalResponse.GetResponseHeader("Location"))"
             Write-Verbose -Message "Status code : $($inititalResponse.StatusCode)"
         }
-        catch
-        {
+        catch {
             throw $_
         }
 
         # IF HTTP status code is linked to redirected URL
-        if ($inititalResponse.StatusCode.value__ -in (301, 302, 303, 307, 308))
-        {
+        if ($inititalResponse.StatusCode.value__ -in (301, 302, 303, 307, 308)) {
             Write-Verbose -Message "URI to redirect : $($inititalResponse.GetResponseHeader("Location"))"
             # Create new request with the redirect URL
             $redirectUrl = $inititalResponse.GetResponseHeader("Location")
@@ -132,10 +127,9 @@ function Invoke-SEPCloudWebRequest
             $newRequest.AllowAutoRedirect = $false
 
             # Add query parameters
-            if ($queryStrings.Count -gt 0)
-            {
+            if ($queryStrings.Count -gt 0) {
                 # Construct the URI
-                $uri = Build-QueryURI -BaseURI $uri -QueryStrings $queryStrings
+                $uri = New-QueryURI -BaseURI $uri -QueryStrings $queryStrings
             }
 
             # Add body
