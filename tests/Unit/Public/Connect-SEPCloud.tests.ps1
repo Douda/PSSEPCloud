@@ -1,5 +1,5 @@
 BeforeAll {
-    $script:moduleName = '<% $PLASTER_PARAM_ModuleName %>'
+    $script:moduleName = 'PSSEPCloud'
 
     # If the module is not found, run the build task 'noop'.
     if (-not (Get-Module -Name $script:moduleName -ListAvailable))
