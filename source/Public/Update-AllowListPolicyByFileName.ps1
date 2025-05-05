@@ -13,6 +13,13 @@ function Update-AllowListPolicyByFileName {
 
     adds file exception "C:\test\exception.exe" to the allow list policy with all the supported features
 
+    .EXAMPLE
+    $featuresList = @("AUTO_PROTECT", "BEHAVIORAL_ANALYSIS", "TAMPER_PROTECTION", "DEVICE_CONTROL", "ADAPTIVE_ISOLATION")
+    Update-AllowListPolicyByFileName -policy_uid "12345678-1234-1234-1234-123456789123"-path "C:\test\exception.exe" -features $featuresList
+
+    adds file exception "C:\test\exception.exe" to the allow list policy with all the supported features
+    This time no version is provided, by default the latest version is used
+
     #>
     param
     (
@@ -83,6 +90,7 @@ function Update-AllowListPolicyByFileName {
 
         # Manually updating the body to match the API endpoint
         # No ways to get the nested body data from the function parameters for now
+        # TODO: Add support for nested body data
         $body = @{
             add = @{
                 windows = @{
