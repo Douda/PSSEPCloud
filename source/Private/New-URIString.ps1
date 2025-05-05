@@ -43,6 +43,11 @@ function New-URIString
         $endpoint
     )
 
+    Write-Verbose -Message 'Verify that we have a valid base URL'
+    if ($null -eq $baseURL -or '' -eq $baseURL) {
+        throw 'no API region set. Please set it with Set-SEPCloudRegion'
+    }
+
     Write-Verbose -Message 'Build the URI'
     $uri = ('https://' + $baseUrl + $endpoint)
 
