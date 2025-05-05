@@ -512,6 +512,24 @@ function Get-SEPCloudAPIData
                     ObjectTName = 'SEPCloud.DeviceCommandResponse'
                 }
             }
+            'Update-AllowListPolicyByFileName'         = @{
+                '1.0' = @{
+                    Description = 'perform partial update of Allow list policy by filename'
+                    URI         = '/v1/policies/allow-list/{id}/versions/{id}'
+                    Method      = 'Patch'
+                    Body        = @{
+                        pathvariable = 'pathvariable'
+                        path         = 'path'
+                        scheduled    = 'scheduled'
+                        features     = 'features'
+                    }
+                    Query       = ''
+                    Result      = ''
+                    Success     = ''
+                    Function    = 'Update-AllowListPolicyByFileName'
+                    ObjectTName = 'SEPCloud.update-policy-response'
+                }
+            }
         }
 
         # Use the latest version of the API endpoint

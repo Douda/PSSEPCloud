@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Set-SEPCloudRegion function to set the correct region for the SEPCloud API.
+- Set-SEPCloudRegion function to set the correct region for the SEPCloud API
+- Update-AllowListPolicyByFileName function to add a filename to the allow list policy
+
 
 
 ### Changed
