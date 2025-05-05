@@ -64,6 +64,7 @@ Get-SEPCloudDevice
 Get-SEPCloudComponentType
 Start-SEPCloudDefinitionUpdate
 Set-SEPCloudPolicy
+Set-SEPCloudRegion
 Start-SEPCloudFullScan
 Start-SEPCloudQuickScan
 ```
@@ -74,6 +75,14 @@ For detailed information about each command, use `Get-Help <command> -Full`
 Generate your authentication token via your [SEP Cloud console integration menu](https://SEP.securitycloud.symantec.com/v2/integration/client-applications) and keep your ClientID & Secret
 
 ### Examples
+
+Set the Symantec tenant region to query
+
+```PowerShell
+# 3 regions available : Europe / North America / India
+PS C:\PSSEPCloud> Set-SEPCloudRegion -region 'North America'
+```
+
 Connect to the API via the approate Cmd-let
 
 ```PowerShell
