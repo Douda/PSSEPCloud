@@ -1,19 +1,17 @@
-function Update-AllowListPolicyByFileName
-{
+function Update-AllowListPolicyByFileName {
     <#
     .SYNOPSIS
     Add a filename to the allow list policy.
 
     .DESCRIPTION
     Add a filename to the allow list policy.
-    NOTE: Windows only
+    By default enable the exception of scheduled & manual scans for AutoProtect & Behavioral Analysis technologies
 
     .EXAMPLE
     $featuresList = @("AUTO_PROTECT", "BEHAVIORAL_ANALYSIS", "TAMPER_PROTECTION", "DEVICE_CONTROL", "ADAPTIVE_ISOLATION")
     Update-AllowListPolicyByFileName -policy_uid "12345678-1234-1234-1234-123456789123" -version "1" -path "C:\test\exception.exe" -features $featuresList
 
-    adds file exception "C:\test\exception.exe" to the allow list policy
-    with all the supported features
+    adds file exception "C:\test\exception.exe" to the allow list policy with all the supported features
 
     #>
     param
@@ -36,10 +34,10 @@ function Update-AllowListPolicyByFileName
             "[SYSTEM_DRIVE]",
             "[USER_PROFILE]",
             "[WINDOWS]"
-            )]
+        )]
         $pathvariable = "[NONE]",
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         $path,
 
         [bool]
@@ -47,13 +45,13 @@ function Update-AllowListPolicyByFileName
 
         [array]
         [ValidateScript({
-            foreach ($feature in $_) {
+                foreach ($feature in $_) {
                     if ($_ -notin @("AUTO_PROTECT", "BEHAVIORAL_ANALYSIS", "TAMPER_PROTECTION", "DEVICE_CONTROL", "ADAPTIVE_ISOLATION")) {
-                    throw [System.Management.Automation.ValidationMetadataException] "Invalid feature: $feature"
+                        throw [System.Management.Automation.ValidationMetadataException] "Invalid feature: $feature"
+                    }
                 }
-            }
-            return $true
-        })]
+                return $true
+            })]
         $features = @("AUTO_PROTECT", "BEHAVIORAL_ANALYSIS")
     )
 
@@ -73,6 +71,12 @@ function Update-AllowListPolicyByFileName
     }
 
     process {
+        # Gets the latest policy version if no version is provided
+        if ($null -eq $version) {
+            Write-Verbose -Message "No version provided, using latest policy version"
+            $version = Get-SEPCloudPolicesSummary | Where-Object { $_.policy_uid -eq $policy_uid } | Select-Object -ExpandProperty policy_version
+        }
+
         $uri = New-URIString -endpoint ($resources.URI) -id @($policy_uid, $version)
         $uri = Test-QueryParam -querykeys ($resources.Query.Keys) -parameters ((Get-Command $function).Parameters.Values) -uri $uri
         $body = New-BodyString -bodykeys ($resources.Body.Keys) -parameters ((Get-Command $function).Parameters.Values)
