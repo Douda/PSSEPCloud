@@ -53,7 +53,7 @@ function Get-SEPCloudComponentType
     process
     {
         # changing "Content-Type" header specifically for this query, otherwise 415 : unsupported media type
-        $script:SEPCloudConnection.header += @{ 'Content-Type' = 'application/json' }
+        $script:SEPCloudConnection.header['Content-Type'] = 'application/json'
 
         $uri = New-URIString -endpoint ($resources.URI) -id $ComponentType
         $uri = Test-QueryParam -querykeys ($resources.Query.Keys) -parameters ((Get-Command $function).Parameters.Values) -uri $uri
@@ -63,11 +63,9 @@ function Get-SEPCloudComponentType
         $result = Submit-Request -uri $uri -header $script:SEPCloudConnection.header -method $($resources.Method) -body $body
 
         # Test if pagination required
-        if (($result.total -gt $result.data.count) -or ($result.total_count -gt $result.data.count))
-        {
+        if (($result.total -gt $result.data.count) -or ($result.total_count -gt $result.data.count)) {
             Write-Verbose -Message "Result limits hit. Retrieving remaining data based on pagination"
-            do
-            {
+            do {
                 # Update offset query param for pagination
                 $offset = $result.data.count
                 $uri = New-URIString -endpoint ($resources.URI) -id $id
@@ -77,27 +75,32 @@ function Get-SEPCloudComponentType
             } until (($result.data.count -ge $result.total) -or ($result.data.count -ge $result.total_count))
         }
 
-        $result = Test-ReturnFormat -result $result -location $resources.Result
-
         # apply correct PSType based on the 4 possible results options
-        if ($null -ne $result.identification)
-        {
-            $resources.ObjectTName = "SEPCloud.adapter"
-        }
-        if ($null -ne $result.classifications)
-        {
-            $resources.ObjectTName = "SEPCloud.ips_metadata"
-        }
-        if ($null -ne $result.services)
-        {
-            $resources.ObjectTName = "SEPCloud.network-services"
-        }
-        if ($null -ne $result.hosts)
-        {
-            $resources.ObjectTName = "SEPCloud.host-group"
+        # Define a hashtable to map properties to their corresponding PSTypeName
+        $typeMapping = @{
+            identification  = "SEPCloud.adapter"
+            classifications = "SEPCloud.ips_metadata"
+            services        = "SEPCloud.network-services"
+            hosts           = "SEPCloud.host-group"
         }
 
-        # Setting PSType to the correct type
+        # Function to check if a property has meaningful data
+        # For some reason, when using if statement count gt 0 still shows true with no data, maybe empty strings
+        function Test-MeaningfulData {
+            param ([object]$data)
+            return $null -ne $data -and ($data.Count -gt 0 -or -not [string]::IsNullOrEmpty($data))
+        }
+
+        # Iterate over the mapping to determine the correct PSTypeName
+        foreach ($property in $typeMapping.Keys) {
+            if (Test-MeaningfulData -data $result.data.$property) {
+                $resources.ObjectTName = $typeMapping[$property]
+                break
+            }
+        }
+
+        # Apply correct format only after knowing which PSType to apply above
+        $result = Test-ReturnFormat -result $result -location $resources.Result
         $result = Set-ObjectTypeName -TypeName $resources.ObjectTName -result $result
 
         # Removing "Content-Type: application/json" header

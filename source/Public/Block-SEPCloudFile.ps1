@@ -19,6 +19,9 @@ function Block-SEPCloudFile
     #>
 
     [CmdletBinding()]
+    # Suppress the unused parameter warning for the parameters that are not used in this function
+    # They are used via BodyString & URIString functions
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSReviewUnusedParameter", "")]
     Param(
         [Alias('deviceId')]
         [String[]]

@@ -1,5 +1,5 @@
 BeforeAll {
-    $script:moduleName = '<% $PLASTER_PARAM_ModuleName %>'
+    $script:moduleName = 'PSSEPCloud'
 
     # If the module is not found, run the build task 'noop'.
     if (-not (Get-Module -Name $script:moduleName -ListAvailable))
@@ -9,7 +9,7 @@ BeforeAll {
     }
 
     # Re-import the module using force to get any code changes between runs.
-    Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
+    Import-Module -Name $script:moduleName #-Force -ErrorAction 'Stop'
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
@@ -68,4 +68,3 @@ Describe Get-Something {
 
     }
 }
-

@@ -1,4 +1,5 @@
 {
+    // Settings for Powershell
     "powershell.codeFormatting.openBraceOnSameLine": true,
     "powershell.codeFormatting.newLineAfterOpenBrace": false,
     "powershell.codeFormatting.newLineAfterCloseBrace": true,
@@ -15,6 +16,14 @@
     "powershell.developer.bundledModulesPath": "${cwd}/output/RequiredModules",
     "powershell.scriptAnalysis.settingsPath": ".vscode\\analyzersettings.psd1",
     "powershell.scriptAnalysis.enable": true,
+// Pester
+"pester.testFilePath": [
+    "[tT]ests/[qQ][aA]/*.[tT]ests.[pP][sS]1",
+    "[tT]ests/[uU]nit/**/*.[tT]ests.[pP][sS]1",
+    "[tT]ests/[uU]nit/*.[tT]ests.[pP][sS]1"
+],
+"pester.pesterModulePath": "./output/RequiredModules/Pester",
+// Files
     "files.trimTrailingWhitespace": true,
     "files.trimFinalNewlines": true,
     "files.insertFinalNewline": true,

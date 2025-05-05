@@ -26,18 +26,18 @@ Update-TypeData -PrependPath (Join-Path -Path $PSScriptRoot -ChildPath 'PSSEPClo
 }
 
 # Module name
-[string] $script:ModuleName = "PSSymantecCloud"
+[string] $script:ModuleName = "PSSEPCloud"
 
 # Load the configuration file
 $script:configuration = [PSCustomObject]@{
     BaseURL           = "api.sep.securitycloud.symantec.com"
     SEPCloudCredsPath = [System.IO.Path]::Combine(
         [System.Environment]::GetFolderPath('LocalApplicationData'),
-        'PSSymantecCloud',
+        'PSSEPCloud',
         'creds.xml')
     CachedTokenPath   = [System.IO.Path]::Combine(
         [System.Environment]::GetFolderPath('LocalApplicationData'),
-        'PSSymantecCloud',
+        'PSSEPCloud',
         'accessToken.xml')
 }
 
