@@ -517,14 +517,14 @@ function Get-SEPCloudAPIData {
                     Method      = 'Patch'
                     Body        = @{
                         add = @{
-                            applications = @{
-                                processfile = @(
-                                    @{
+                            applications = @(
+                                @{
+                                    processfile = @{
                                         sha2 = 'sha2'
                                         name = 'name'
                                     }
-                                )
-                            }
+                                }
+                            )
                         }
                     }
                     Query       = ''
