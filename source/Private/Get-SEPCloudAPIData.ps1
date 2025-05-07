@@ -510,6 +510,30 @@ function Get-SEPCloudAPIData {
                     ObjectTName = 'SEPCloud.DeviceCommandResponse'
                 }
             }
+            'Update-AllowListPolicyByFileHash'         = @{
+                '1.0' = @{
+                    Description = 'perform partial update of Allow list policy by filename'
+                    URI         = '/v1/policies/allow-list/{id}/versions/{id}'
+                    Method      = 'Patch'
+                    Body        = @{
+                        add = @{
+                            applications = @{
+                                processfile = @(
+                                    @{
+                                        sha2 = 'sha2'
+                                        name = 'name'
+                                    }
+                                )
+                            }
+                        }
+                    }
+                    Query       = ''
+                    Result      = ''
+                    Success     = ''
+                    Function    = 'Update-AllowListPolicyByFileHash'
+                    ObjectTName = 'SEPCloud.update-policy-response'
+                }
+            }
             'Update-AllowListPolicyByFileName'         = @{
                 '1.0' = @{
                     Description = 'perform partial update of Allow list policy by filename'
