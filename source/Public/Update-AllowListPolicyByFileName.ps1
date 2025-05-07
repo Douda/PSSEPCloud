@@ -85,15 +85,9 @@ function Update-AllowListPolicyByFileName {
         $uri = New-URIString -endpoint ($resources.URI) -id @($policy_uid, $version)
         $uri = Test-QueryParam -querykeys ($resources.Query.Keys) -parameters ((Get-Command $function).Parameters.Values) -uri $uri
 
-        # Dynamically extract parameter values
-        $paramsHash = @{}
-        foreach ($param in (Get-Command $function).Parameters.Values) {
-            $paramsHash[$param.Name] = (Get-Variable -Name $param.Name -ErrorAction 'SilentlyContinue').Value
-        }
-
-        # Dynamically build the body based on the --nested-- structure provided in $resources.Body
+        # Dynamically extract parameter values to build nested body structure
+        $paramsHash = Get-ParameterValuesAsHashtable -functionName $function
         $body = New-NestedBodyString -bodyStructure $resources.Body -parameterValues $paramsHash
-        Write-Verbose -Message "Body is $(ConvertTo-Json -Depth 100 -InputObject $body)"
 
         $result = Submit-Request -uri $uri -header $script:SEPCloudConnection.header -method $($resources.Method) -body $body
         $result = Test-ReturnFormat -result $result -location $resources.Result
