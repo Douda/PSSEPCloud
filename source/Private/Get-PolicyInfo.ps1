@@ -45,7 +45,7 @@ function Get-PolicyInfo {
     }
 
     return @{
-        $policy_name = $policy_name
+        policy_name = $policy_name
         policy_uid   = $policy_uid
         version      = $version
     }
