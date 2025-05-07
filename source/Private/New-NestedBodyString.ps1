@@ -42,5 +42,7 @@ function New-NestedBodyString {
         return $result
     }
 
-    return BuildBody -structure $bodyStructure -params $parameterValues
+    $result = BuildBody -structure $bodyStructure -params $parameterValues
+    Write-Verbose -Message "Body is $(ConvertTo-Json -Depth 100 -InputObject $result)"
+    return $result
 }
