@@ -83,23 +83,12 @@ function Update-AllowListPolicyByFileName {
     }
 
     process {
-        # Gets policy_uid from policy name if not provided
-        if ($policy_name -and ($null -eq $policy_uid)) {
-            $policy_info = Get-SEPCloudPolicesSummary | Where-Object { $_.name -eq $policy_name }
-            $policy_uid = ($policy_info.policy_uid)
-            if ($policy_info.policy_type -ne "Allow List") {
-                throw "Selected policy is not an Allow List policy"
-            }
-            Write-Verbose -Message "policy_name : $policy_name"
-            Write-Verbose -Message "policy_uid : $policy_uid"
-        }
+        # Get policy information
+        $policyInfo = Get-PolicyInfo -policy_name $policy_name -policy_uid $policy_uid -version $version
+        $policy_uid = $policyInfo.policy_uid
+        $version = $policyInfo.version
 
-        # Gets the latest policy version if no version is provided
-        if ($null -eq $version) {
-            $version = Get-SEPCloudPolicesSummary | Where-Object { $_.policy_uid -eq $policy_uid } | Select-Object -ExpandProperty policy_version
-            Write-Verbose -Message "No version provided, using latest policy version : $version"
-        }
-
+        # Build the URI
         $uri = New-URIString -endpoint ($resources.URI) -id @($policy_uid, $version)
         $uri = Test-QueryParam -querykeys ($resources.Query.Keys) -parameters ((Get-Command $function).Parameters.Values) -uri $uri
 
