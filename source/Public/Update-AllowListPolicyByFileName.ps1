@@ -96,6 +96,7 @@ function Update-AllowListPolicyByFileName {
         $paramsHash = Get-ParameterValuesAsHashtable -functionName $function
         $body = New-NestedBodyString -bodyStructure $resources.Body -parameterValues $paramsHash
 
+        # Submit the request & format the result
         $result = Submit-Request -uri $uri -header $script:SEPCloudConnection.header -method $($resources.Method) -body $body
         $result = Test-ReturnFormat -result $result -location $resources.Result
         $result = Set-ObjectTypeName -TypeName $resources.ObjectTName -result $result
