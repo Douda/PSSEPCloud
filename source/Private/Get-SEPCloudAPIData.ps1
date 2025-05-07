@@ -518,10 +518,18 @@ function Get-SEPCloudAPIData
                     URI         = '/v1/policies/allow-list/{id}/versions/{id}'
                     Method      = 'Patch'
                     Body        = @{
-                        pathvariable = 'pathvariable'
-                        path         = 'path'
-                        scheduled    = 'scheduled'
-                        features     = 'features'
+                        add = @{
+                            windows = @{
+                                files = @(
+                                    @{
+                                        pathvariable = 'pathvariable'
+                                        path         = 'path'
+                                        scheduled    = 'scheduled'
+                                        features     = 'features'
+                                    }
+                                )
+                            }
+                        }
                     }
                     Query       = ''
                     Result      = ''
