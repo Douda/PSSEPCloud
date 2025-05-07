@@ -1,12 +1,10 @@
-function Get-SEPCloudAPIData
-{
+function Get-SEPCloudAPIData {
     [CmdletBinding()]
     param (
         $endpoint
     )
 
-    process
-    {
+    process {
         $api = @{
             'Example'                                  = @{
                 '1.0' = @{
@@ -543,8 +541,7 @@ function Get-SEPCloudAPIData
         # Use the latest version of the API endpoint
         $version = $api.$endpoint.Keys | Sort-Object | Select-Object -Last 1
 
-        if ($null -eq $version)
-        {
+        if ($null -eq $version) {
             $ErrorSplat = @{
                 Message      = "No matching endpoint found for $Endpoint that corresponds to the current cluster version."
                 ErrorAction  = 'Stop'
@@ -552,9 +549,7 @@ function Get-SEPCloudAPIData
                 Category     = 'ObjectNotFound'
             }
             Write-Error @ErrorSplat
-        }
-        else
-        {
+        } else {
             Write-Verbose -Message "Selected $version API Data for $endpoint"
             return $api.$endpoint.$version
         }
