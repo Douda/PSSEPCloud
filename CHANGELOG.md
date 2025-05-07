@@ -11,7 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update-AllowListPolicyByFileName function to add a filename to the allow list policy
 
 
-
 ### Changed
 
 - For changes in existing functionality.
@@ -26,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- For any bug fix.
+- fixed nested body structure from Get-SEPCloudAPIData with new helper function New-NestedBodyString
 
 ### Security
 

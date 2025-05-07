@@ -15,14 +15,12 @@ function Update-AllowListPolicyByFileName {
 
     .EXAMPLE
     $featuresList = @("AUTO_PROTECT", "BEHAVIORAL_ANALYSIS", "TAMPER_PROTECTION", "DEVICE_CONTROL", "ADAPTIVE_ISOLATION")
-    Update-AllowListPolicyByFileName -policy_uid "12345678-1234-1234-1234-123456789123"-path "C:\test\exception.exe" -features $featuresList
+    Update-AllowListPolicyByFileName -policy_uid "12345678-1234-1234-1234-123456789123" -path "C:\test\exception.exe" -features $featuresList
 
     adds file exception "C:\test\exception.exe" to the allow list policy with all the supported features
     This time no version is provided, by default the latest version is used
-
     #>
-    param
-    (
+    param (
         $policy_uid,
         $version,
 
@@ -80,26 +78,22 @@ function Update-AllowListPolicyByFileName {
     process {
         # Gets the latest policy version if no version is provided
         if ($null -eq $version) {
-            Write-Verbose -Message "No version provided, using latest policy version"
             $version = Get-SEPCloudPolicesSummary | Where-Object { $_.policy_uid -eq $policy_uid } | Select-Object -ExpandProperty policy_version
+            Write-Verbose -Message "No version provided, using latest policy version : $version"
         }
 
         $uri = New-URIString -endpoint ($resources.URI) -id @($policy_uid, $version)
         $uri = Test-QueryParam -querykeys ($resources.Query.Keys) -parameters ((Get-Command $function).Parameters.Values) -uri $uri
-        $body = New-BodyString -bodykeys ($resources.Body.Keys) -parameters ((Get-Command $function).Parameters.Values)
 
-        # Manually updating the body to match the API endpoint
-        # No ways to get the nested body data from the function parameters for now
-        # TODO: Add support for nested body data
-        $body = @{
-            add = @{
-                windows = @{
-                    files = @(
-                        $body
-                    )
-                }
-            }
+        # Dynamically extract parameter values
+        $paramsHash = @{}
+        foreach ($param in (Get-Command $function).Parameters.Values) {
+            $paramsHash[$param.Name] = (Get-Variable -Name $param.Name -ErrorAction 'SilentlyContinue').Value
         }
+
+        # Dynamically build the body based on the --nested-- structure provided in $resources.Body
+        $body = New-NestedBodyString -bodyStructure $resources.Body -parameterValues $paramsHash
+        Write-Verbose -Message "Body is $(ConvertTo-Json -Depth 100 -InputObject $body)"
 
         $result = Submit-Request -uri $uri -header $script:SEPCloudConnection.header -method $($resources.Method) -body $body
         $result = Test-ReturnFormat -result $result -location $resources.Result
