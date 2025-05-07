@@ -8,6 +8,12 @@ function Update-AllowListPolicyByFileName {
     By default enable the exception of scheduled & manual scans for AutoProtect & Behavioral Analysis technologies
 
     .EXAMPLE
+    Update-AllowListPolicyByFileName -policy_name "my Allow List Policy" -path "C:\test\exception.exe"
+
+    adds file exception "C:\test\exception.exe" to the latest version of the allow list policy
+    By default enable the exception of scheduled & manual scans for AutoProtect & Behavioral Analysis technologies
+
+    .EXAMPLE
     $featuresList = @("AUTO_PROTECT", "BEHAVIORAL_ANALYSIS", "TAMPER_PROTECTION", "DEVICE_CONTROL", "ADAPTIVE_ISOLATION")
     Update-AllowListPolicyByFileName -policy_uid "12345678-1234-1234-1234-123456789123" -version "1" -path "C:\test\exception.exe" -features $featuresList
 
