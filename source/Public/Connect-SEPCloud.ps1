@@ -1,5 +1,4 @@
-function Connect-SEPCloud
-{
+function Connect-SEPCloud {
     [CmdletBinding()]
     param (
         # Additional information to be added, takes hashtable as input
@@ -9,8 +8,7 @@ function Connect-SEPCloud
         $secret
     )
 
-    process
-    {
+    process {
         # Create User Agent string
         $UserAgentString = New-UserAgentString -UserAgentHash $UserAgent
         $PSBoundParameters.Remove($UserAgent) | Out-Null
@@ -20,33 +18,25 @@ function Connect-SEPCloud
 
         # If called from Initialize-SEPCloudConfiguration
         # get token from cache only to avoid prompting for creds while loading the module
-        if ($cacheOnly)
-        {
+        if ($cacheOnly) {
             Write-Verbose -Message "Token request using cachedOnly"
             $token = Get-SEPCloudToken -cacheOnly
-        }
-        elseif ($clientId -and $secret)
-        {
+        } elseif ($clientId -and $secret) {
             Write-Verbose -Message "Token request using client and secret"
             $token = Get-SEPCloudToken -client $clientId -Secret $secret
-        }
-        else
-        {
+        } else {
             $token = Get-SEPCloudToken
         }
 
         # if we have a token, add it to the header
-        if ($null -ne $token)
-        {
+        if ($null -ne $token) {
             $head = @{
                 'Authorization' = "$($Token.Token_Bearer)";
                 'User-Agent'    = $UserAgentString#;
                 # 'Host'          = $($script:SEPCloudConnection.BaseURL)
             }
             $script:SEPCloudConnection | Add-Member -Type NoteProperty -Name 'header' -Value $head -Force
-        }
-        else
-        {
+        } else {
             # If no token, just add User-Agent
             $head = @{
                 'User-Agent' = $UserAgentString#;
