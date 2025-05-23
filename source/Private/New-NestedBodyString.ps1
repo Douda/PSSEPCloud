@@ -84,7 +84,11 @@ function New-NestedBodyString {
         return $result
     }
 
-    $result = BuildBody -structure $bodyStructure -params $parameterValues
-    Write-Verbose -Message "Body is $(ConvertTo-Json -Depth 100 -InputObject $result)"
-    return $result
+        if (ShouldProcess -Action "Building nested body structure") {
+            $result = BuildBody -structure $bodyStructure -params $parameterValues
+            Write-Verbose -Message "Body is $(ConvertTo-Json -Depth 100 -InputObject $result)"
+            return $result
+        } else {
+            Write-Verbose "Action aborted by user"
+        }
 }
