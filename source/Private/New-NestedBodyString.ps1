@@ -46,43 +46,41 @@ function New-NestedBodyString {
         [hashtable]$parameterValues
     )
 
-    function BuildBody {
-        param (
-            [hashtable]$structure,
-            [hashtable]$params
-        )
+    process {
+        function BuildBody {
+            param (
+                [hashtable]$structure,
+                [hashtable]$params
+            )
 
-        $result = @{}
+            $result = @{}
 
-        foreach ($key in $structure.Keys) {
-            $value = $structure[$key]
+            foreach ($key in $structure.Keys) {
+                $value = $structure[$key]
 
-            if ($value -is [hashtable]) {
-                # Recursively build the nested structure
-                $result[$key] = BuildBody -structure $value -params $params
-            }
-            elseif ($value -is [array]) {
-                # Handle arrays
-                $result[$key] = @()
-                foreach ($item in $value) {
-                    if ($item -is [hashtable]) {
-                        $result[$key] += BuildBody -structure $item -params $params
+                if ($value -is [hashtable]) {
+                    # Recursively build the nested structure
+                    $result[$key] = BuildBody -structure $value -params $params
+                } elseif ($value -is [array]) {
+                    # Handle arrays
+                    $result[$key] = @()
+                    foreach ($item in $value) {
+                        if ($item -is [hashtable]) {
+                            $result[$key] += BuildBody -structure $item -params $params
+                        } else {
+                            $result[$key] += $item
+                        }
                     }
-                    else {
-                        $result[$key] += $item
+                } else {
+                    # Handle individual parameters
+                    if ($params.ContainsKey($value)) {
+                        $result[$key] = $params[$value]
                     }
                 }
             }
-            else {
-                # Handle individual parameters
-                if ($params.ContainsKey($value)) {
-                    $result[$key] = $params[$value]
-                }
-            }
+
+            return $result
         }
-
-        return $result
-    }
 
         if (ShouldProcess -Action "Building nested body structure") {
             $result = BuildBody -structure $bodyStructure -params $parameterValues
@@ -91,4 +89,5 @@ function New-NestedBodyString {
         } else {
             Write-Verbose "Action aborted by user"
         }
+    }
 }
