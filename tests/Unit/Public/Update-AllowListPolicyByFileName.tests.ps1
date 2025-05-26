@@ -28,7 +28,7 @@ Describe Get-Something {
         BeforeAll {
             # Mock the necessary functions
             Mock Test-SEPCloudConnection -ModuleName $ProjectName -MockWith { $true }
-            Mock Get-SEPCLoudAPIData -ModuleName $ProjectName -MockWith {
+            Mock Get-SEPCloudAPIData -ModuleName $ProjectName -MockWith {
                 param ($endpoint)
                 return @{
                     Description = 'perform partial update of Allow list policy by filename'

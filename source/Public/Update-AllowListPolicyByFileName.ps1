@@ -77,7 +77,7 @@ function Update-AllowListPolicyByFileName {
 
         # Retrieve all of the URI, method, body, query, result, and success details for the API endpoint
         Write-Verbose -Message "Gather API Data for $function"
-        $resources = Get-SEPCLoudAPIData -endpoint $function
+        $resources = Get-SEPCloudAPIData -endpoint $function
         Write-Verbose -Message "Load API data for $($resources.Function)"
         Write-Verbose -Message "Description: $($resources.Description)"
     }
