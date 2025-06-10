@@ -1,5 +1,4 @@
-function Get-SEPCloudComponentType
-{
+function Get-SEPCloudComponentType {
 
     <#
     .SYNOPSIS
@@ -17,6 +16,9 @@ function Get-SEPCloudComponentType
     #>
 
     [CmdletBinding()]
+    # Suppress the unused parameter warning for the parameters that are not used in this function
+    # They are used via BodyString & URIString functions
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSReviewUnusedParameter", "")]
     Param(
         # Component Type is one of the list
         [Parameter(
@@ -34,8 +36,7 @@ function Get-SEPCloudComponentType
         $limit = 1000
     )
 
-    begin
-    {
+    begin {
         # Check to ensure that a session to the SaaS exists and load the needed header data for authentication
         Test-SEPCloudConnection | Out-Null
 
@@ -50,8 +51,7 @@ function Get-SEPCloudComponentType
         Write-Verbose -Message "Description: $($resources.Description)"
     }
 
-    process
-    {
+    process {
         # changing "Content-Type" header specifically for this query, otherwise 415 : unsupported media type
         $script:SEPCloudConnection.header['Content-Type'] = 'application/json'
 

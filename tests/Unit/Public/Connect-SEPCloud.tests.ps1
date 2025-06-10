@@ -24,57 +24,28 @@ AfterAll {
     Remove-Module -Name $script:moduleName
 }
 
-Describe Get-Something {
-    BeforeAll {
-        Mock -CommandName Test-SEPCloudToken -MockWith { $PrivateData }
-    }
-    Context 'Return values' {
-        BeforeEach {
-            $return = Get-Something -Data 'value'
-        }
+Describe Connect-SEPCloud {
+    Context 'When called with valid parameters' {
+        It 'should create a valid header with token' {
+            # Arrange
+            $clientId = 'validClientId'
+            $secret = 'validSecret'
+            $mockToken = [PSCustomObject]@{ Token_Bearer = 'validToken' }
+            Mock Get-SEPCloudToken  { return $mockToken }
 
-        It 'Returns a single object' {
-            ($return | Measure-Object).Count | Should -Be 1
-        }
+            # Act
+            Connect-SEPCloud -clientId $clientId -secret $secret
 
-        It 'Returns a string from Test-SEPCloudToken' {
-            Assert-MockCalled Test-SEPCloudToken -Times 1 -Exactly -Scope It
-            $return | Should -Be 'value'
-        }
-    }
-
-    Context 'Pipeline' {
-        It 'Accepts values from the pipeline by value' {
-            $return = 'value1', 'value2' | Get-Something
-                Assert-MockCalled Test-SEPCloudToken -Times 2 -Exactly -Scope It
-            $return[0] | Should -Be 'value1'
-            $return[1] | Should -Be 'value2'
-        }
-
-        It 'Accepts value from the pipeline by property name' {
-            $return = 'value1', 'value2' | ForEach-Object {
-                [PSCustomObject]@{
-                    Data = $_
-                    OtherProperty = 'other'
-                }
-            } | Get-Something
-
-                Assert-MockCalled Test-SEPCloudToken -Times 2 -Exactly -Scope It
-            $return[0] | Should -Be 'value1'
-            $return[1] | Should -Be 'value2'
+            # Assert
+            $script:SEPCloudConnection.header.Authorization | Should Be 'validToken'
+            $script:SEPCloudConnection.header.'User-Agent' | Should Be 'UserAgentString'
         }
     }
 
     Context 'ShouldProcess' {
         It 'Supports WhatIf' {
-            (Get-Command Get-Something).Parameters.ContainsKey('WhatIf') | Should -Be $true
-            { Get-Something -Data 'value' -WhatIf } | Should -Not -Throw
-        }
-
-        It 'Does not call Test-SEPCloudToken if WhatIf is set' {
-            $return = Get-Something -Data 'value' -WhatIf
-            $return | Should -BeNullOrEmpty
-            Assert-MockCalled Test-SEPCloudToken -Times 0 -Scope It
+            (Get-Command Connect-SEPCloud).Parameters.ContainsKey('WhatIf') | Should -Be $true
+            { Connect-SEPCloud -clientId 'value' -WhatIf } | Should -Not -Throw
         }
     }
 }

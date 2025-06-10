@@ -5,7 +5,7 @@ function New-URIString
     .SYNOPSIS
         Builds a valid URI
     .DESCRIPTION
-        Builds a valid URI based off of the constructs defined in the Get-SEPCLoudAPIData resources for the cmdlet.
+        Builds a valid URI based off of the constructs defined in the Get-SEPCloudAPIData resources for the cmdlet.
         Inserts any object IDs into the URI if {id} is specified within the constructs.
     .PARAMETER baseURL
         The base URL for the API
