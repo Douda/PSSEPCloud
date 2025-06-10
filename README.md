@@ -19,7 +19,7 @@ To interact with your SEP Cloud platform you need to
 - Generate your [authentication token](https://apidocs.securitycloud.symantec.com/#/doc?id=ses_auth) (Go to SES > Generating your token bearer)
 
 
-This module follows the [Module Builder Project](https://github.com/PoshCode/ModuleBuilder) folder structure for easy maintenance and versioning
+This module follows the [Sampler Project](https://github.com/gaelcolas/Sampler) folder structure for easy maintenance and versioning
 
 
 ## Installation
