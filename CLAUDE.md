@@ -52,23 +52,72 @@ PSSEPCloud is a PowerShell module that provides a comprehensive API wrapper for 
 
 ### GitHub Actions CI/CD
 
-The project uses GitHub Actions for continuous integration and deployment:
+The project uses GitHub Actions for continuous integration and deployment with **Windows-focused testing**:
 
-- **Main CI/CD Pipeline** (`.github/workflows/ci-cd.yml`):
-  - Triggers on pushes to `main` branch and version tags
-  - Tests on Windows with PowerShell 5.1 and PowerShell 7.x
-  - Automatic deployment to PowerShell Gallery on successful tests
-  - Requires `GALLERY_API_TOKEN` secret for PowerShell Gallery publishing
+#### **Main CI/CD Pipeline** (`.github/workflows/ci-cd.yml`)
+**Triggers**: Pushes to `main` branch, version tags, pull requests, manual dispatch
 
-- **Pull Request Validation** (`.github/workflows/pr.yml`):
-  - Runs on all pull requests to `main` branch
-  - Performs code quality checks, security scans, and tests
-  - Validates help documentation completeness
-  - Runs PSScriptAnalyzer with PSGallery settings
+**Build Stage**:
+- Uses `windows-latest` runner with GitVersion for semantic versioning
+- Runs `./build.ps1 -ResolveDependency -tasks pack`
+- Uploads build artifacts for downstream jobs
 
-#### Required Repository Secrets
-- `GALLERY_API_TOKEN`: PowerShell Gallery API key for module publishing
-- `GITHUB_TOKEN`: Automatically provided by GitHub for releases and PR creation
+**Test Stage** (Matrix Strategy):
+- **Job 1**: Windows PowerShell 5.1 (`powershell.exe`)
+- **Job 2**: PowerShell 7.x on Windows (`pwsh`)
+- Both jobs run `./build.ps1 -tasks test -CodeCoverageThreshold 0`
+- Publishes NUnit test results and uploads coverage artifacts
+- All tests currently pass: 19 passed, 0 failed, 2 skipped
+
+**Deploy Stage** (Production Environment):
+- Triggers only on `main` branch or version tags
+- Runs `./build.ps1 -tasks publish` for PowerShell Gallery deployment
+- Creates changelog pull requests automatically
+
+#### **Pull Request Validation** (`.github/workflows/pr.yml`)
+**Quality Assurance Jobs**:
+- **Test Validation**: Matrix testing on PS 5.1 and 7.x
+- **Code Quality**: PSScriptAnalyzer scan with PSGallery settings
+- **Help Documentation**: Validates all public functions have proper help
+- **Security Scan**: DevSkim security analysis (currently disabled on Windows)
+
+#### **Setup Instructions**
+
+**Required Repository Secrets**:
+1. **`GALLERY_API_TOKEN`**: PowerShell Gallery API key
+   - Go to https://www.powershellgallery.com/account/apikeys
+   - Create key with scope: `PSSEPCloud*` and "Push" permissions
+   - Add to GitHub: Settings → Secrets and variables → Actions → New repository secret
+
+2. **`GITHUB_TOKEN`**: Automatically provided by GitHub
+
+**Configuration Files**:
+- `build.yaml`: Pester configuration with test paths (`tests/Unit`, `tests/QA`)
+- `GitVersion.yml`: Semantic versioning configuration
+- Test execution uses CodeCoverageThreshold 0 for CI (adjustable)
+
+#### **Current Status & Known Issues**
+
+**✅ Working Correctly**:
+- Build process and module packaging
+- PowerShell version switching (5.1 vs 7.x)
+- Test execution (19 tests pass on both versions)
+- GitVersion semantic versioning
+- Artifact management and deployment pipeline
+
+**🔧 Known Issues to Fix**:
+1. **NUnit XML Output**: Test results not properly exported for GitHub Actions consumption
+2. **PSScriptAnalyzer Violations**:
+   - Missing `[CmdletBinding(SupportsShouldProcess)]` for state-changing functions
+   - Empty catch blocks in `New-UserAgentString.ps1:41,74`
+   - Deprecated WMI cmdlet usage (use CIM instead)
+   - Plural noun violations in cmdlet names
+3. **DevSkim Security Scan**: Disabled on Windows (Linux container issue)
+
+**Next Steps**:
+1. Fix Pester NUnit XML export configuration
+2. Resolve PSScriptAnalyzer code quality issues
+3. Merge PR once tests report correctly
 
 ### Testing
 - Uses Pester for unit testing with 85% code coverage requirement
