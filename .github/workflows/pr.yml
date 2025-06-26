@@ -1,0 +1,139 @@
+name: Pull Request Validation
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+
+env:
+  buildFolderName: output
+  buildArtifactName: pr-build
+  testResultFolderName: testResults
+
+jobs:
+  validate-pr:
+    name: Validate Pull Request
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - displayName: 'Windows PowerShell 5.1'
+            pwsh: false
+          - displayName: 'Windows PowerShell 7.x'
+            pwsh: true
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v1.1.1
+        with:
+          versionSpec: '5.x'
+
+      - name: Calculate Version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v1.1.1
+        with:
+          useConfigFile: true
+
+      - name: Build Module
+        shell: pwsh
+        run: |
+          ./build.ps1 -ResolveDependency -tasks build
+        env:
+          ModuleVersion: ${{ steps.gitversion.outputs.nuGetVersionV2 }}
+
+      - name: Run Tests (${{ matrix.displayName }})
+        shell: pwsh
+        run: |
+          ./build.ps1 -tasks test -CodeCoverageThreshold 85
+        env:
+          PWSH: ${{ matrix.pwsh }}
+
+      - name: Publish Test Results
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: PR Test Results (${{ matrix.displayName }})
+          path: '${{ env.buildFolderName }}/${{ env.testResultFolderName }}/NUnit*.xml'
+          reporter: java-junit
+
+      - name: Comment Test Results
+        uses: phoenix-actions/test-reporting@v12
+        if: success() || failure()
+        with:
+          name: Test Results (${{ matrix.displayName }})
+          path: '${{ env.buildFolderName }}/${{ env.testResultFolderName }}/NUnit*.xml'
+          reporter: java-junit
+          output-to: 'step-summary'
+
+  lint-and-format:
+    name: Code Quality Checks
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        shell: pwsh
+        run: |
+          ./build.ps1 -ResolveDependency -tasks noop
+
+      - name: PSScriptAnalyzer Scan
+        shell: pwsh
+        run: |
+          $results = Invoke-ScriptAnalyzer -Path ./source -Recurse -Settings PSGallery -Severity Warning,Error
+          if ($results) {
+            $results | Format-Table -AutoSize | Out-String | Write-Output
+            Write-Error "PSScriptAnalyzer found issues. Please review and fix them."
+            exit 1
+          } else {
+            Write-Output "✅ No PSScriptAnalyzer issues found."
+          }
+
+      - name: Verify Help Documentation
+        shell: pwsh
+        run: |
+          # Check that all public functions have proper help documentation
+          $publicFunctions = Get-ChildItem -Path ./source/Public -Filter "*.ps1" -Recurse
+          $missingHelp = @()
+          
+          foreach ($function in $publicFunctions) {
+            $content = Get-Content $function.FullName -Raw
+            if ($content -notmatch '\.SYNOPSIS|\.DESCRIPTION|\.PARAMETER|\.EXAMPLE') {
+              $missingHelp += $function.Name
+            }
+          }
+          
+          if ($missingHelp) {
+            Write-Error "Functions missing help documentation: $($missingHelp -join ', ')"
+            exit 1
+          } else {
+            Write-Output "✅ All public functions have help documentation."
+          }
+
+  security-scan:
+    name: Security Scan
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Run DevSkim Security Scan
+        uses: microsoft/DevSkim-Action@v1
+        with:
+          directory-to-scan: ./source
+
+      - name: Upload DevSkim Results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: devskim-results.sarif
