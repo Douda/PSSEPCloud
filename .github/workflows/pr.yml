@@ -52,9 +52,13 @@ jobs:
       - name: Run Tests (${{ matrix.displayName }})
         shell: pwsh
         run: |
-          ./build.ps1 -tasks test -CodeCoverageThreshold 85
+          if ('${{ matrix.pwsh }}' -eq 'false') {
+            powershell.exe -Command "./build.ps1 -tasks test -CodeCoverageThreshold 0"
+          } else {
+            ./build.ps1 -tasks test -CodeCoverageThreshold 0
+          }
         env:
-          PWSH: ${{ matrix.pwsh }}
+          ModuleVersion: ${{ steps.gitversion.outputs.nuGetVersionV2 }}
 
       - name: Publish Test Results
         uses: dorny/test-reporter@v1

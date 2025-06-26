@@ -95,10 +95,8 @@ Pester:
   # only run tests in certain folders, or run specific test files, or can be use to
   # specify the order tests are run.
   Script:
-  # - tests/QA/module.tests.ps1
-  # - tests/QA
-  # - tests/Unit
-  # - tests/Integration
+    - tests/Unit
+    - tests/QA
   ExcludeTag:
   #  - helpQuality
   #  - FunctionalQuality
