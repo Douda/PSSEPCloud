@@ -101,7 +101,17 @@ function Initialize-SEPCloudConfiguration
 
     # Attempt to connect to the SaaS with cached token or credentials
     # Will only attempt to connect via cached method (token or credentials) and not prompt for credentials
-    Connect-SEPCloud -cacheOnly
+    try {
+        # Check if Connect-SEPCloud is available before calling it
+        # This prevents circular dependency issues during module loading
+        if (Get-Command -Name 'Connect-SEPCloud' -ErrorAction SilentlyContinue) {
+            Connect-SEPCloud -cacheOnly
+        } else {
+            Write-Verbose -Message "Connect-SEPCloud not yet available during module initialization, skipping auto-connection"
+        }
+    } catch {
+        Write-Verbose -Message "Failed to auto-connect during module initialization: $($_.Exception.Message)"
+    }
 }
 
 # Invoke the initialization method to populate the configuration
