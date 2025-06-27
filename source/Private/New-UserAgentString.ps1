@@ -23,6 +23,7 @@ function New-UserAgentString
 
         Will generate a new user agent string containing the module name, version and OS / platform information with the additional information specified in UserAgentHash
     #>
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [hashtable] $UserAgentHash
     )
