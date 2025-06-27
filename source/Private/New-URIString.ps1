@@ -43,6 +43,11 @@ function New-URIString
         $endpoint
     )
 
+    # Check if we should proceed with building the URI string
+    if (-not $PSCmdlet.ShouldProcess("URI String Construction", "Build URI string from base URL and endpoint")) {
+        return $null
+    }
+
     Write-Verbose -Message 'Verify that we have a valid base URL'
     if ($null -eq $baseURL -or '' -eq $baseURL) {
         throw 'no API region set. Please set it with Set-SEPCloudRegion'
