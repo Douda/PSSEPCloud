@@ -1,5 +1,10 @@
-function New-QueryString($query, $uri)
+function New-QueryString
 {
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        $query,
+        $uri
+    )
     <#
     .SYNOPSIS
     Adds query parameters to a URI
