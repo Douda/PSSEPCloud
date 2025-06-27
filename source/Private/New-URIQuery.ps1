@@ -1,5 +1,11 @@
-function New-URIQuery($queryKeys, $parameters, $uri)
+function New-URIQuery
 {
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        $queryKeys,
+        $parameters,
+        $uri
+    )
 
     <#
     .SYNOPSIS
