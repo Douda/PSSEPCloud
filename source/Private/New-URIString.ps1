@@ -25,7 +25,7 @@ function New-URIString
 
 
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param (
         [Parameter()]
         [string]
