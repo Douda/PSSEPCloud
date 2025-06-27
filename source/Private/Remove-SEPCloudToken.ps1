@@ -14,22 +14,27 @@ function Remove-SEPCloudToken
       The PrivateData parameter is what will be returned without transformation.
 
       #>
-    [cmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     [OutputType([string])]
     param()
 
     process
     {
-        $script:SEPCloudConnection | Add-Member -MemberType NoteProperty -Name AccessToken -Value $null -Force -ErrorAction SilentlyContinue
-        $script:configuration | Add-Member -MemberType NoteProperty -Name AccessToken  -Value $null -Force -ErrorAction SilentlyContinue
+        if ($PSCmdlet.ShouldProcess("SEP Cloud Connection", "Remove access token")) {
+            $script:SEPCloudConnection | Add-Member -MemberType NoteProperty -Name AccessToken -Value $null -Force -ErrorAction SilentlyContinue
+            $script:configuration | Add-Member -MemberType NoteProperty -Name AccessToken  -Value $null -Force -ErrorAction SilentlyContinue
+        }
+        
         if ($script:configuration.CachedTokenPath)
         {
-            try
-            {
-                Remove-Item $script:configuration.CachedTokenPath -Force
-            }
-            catch {
-                Write-Error "$_"
+            if ($PSCmdlet.ShouldProcess($script:configuration.CachedTokenPath, "Remove cached token file")) {
+                try
+                {
+                    Remove-Item $script:configuration.CachedTokenPath -Force
+                }
+                catch {
+                    Write-Error "$_"
+                }
             }
         }
     }
