@@ -89,25 +89,55 @@ jobs:
           Write-Host "=== Module Loading Diagnostics ==="
           Write-Host "PSModulePath: $env:PSModulePath"
           Write-Host "PowerShell Version: $($PSVersionTable.PSVersion)"
+          
+          # Debug: Show all downloaded artifacts
+          Write-Host "=== Downloaded Artifacts Structure ==="
+          Write-Host "Contents of $env:buildFolderName:"
+          Get-ChildItem -Path "$env:buildFolderName" -Recurse | Format-Table FullName, Length -AutoSize
+          
+          Write-Host "All .psd1 files in artifacts:"
+          Get-ChildItem -Path "$env:buildFolderName" -Recurse -Filter "*.psd1" | Format-Table FullName, Directory, Name -AutoSize
+          
           Write-Host "Available PSSEPCloud modules:"
           Get-Module -ListAvailable | Where-Object Name -eq 'PSSEPCloud' | Format-Table Name, Version, Path -AutoSize
           
-          # Test module import before running tests
+          # Find and verify the built module
           Write-Host "=== Module Import Verification ==="
           try {
-            $module = Import-Module PSSEPCloud -Force -PassThru -ErrorAction Stop
+            # Find the built module manifest
+            $moduleManifests = Get-ChildItem -Path "$env:buildFolderName" -Recurse -Filter "PSSEPCloud.psd1" | Where-Object { $_.Directory.Name -match '^\d+\.\d+\.\d+' }
+            if (-not $moduleManifests) {
+              throw "No built module manifest found in $env:buildFolderName"
+            }
+            
+            $moduleManifest = $moduleManifests | Select-Object -First 1
+            Write-Host "📁 Found module manifest: $($moduleManifest.FullName)"
+            
+            # Test module manifest validity
+            $manifestTest = Test-ModuleManifest -Path $moduleManifest.FullName -ErrorAction Stop
+            Write-Host "✅ Module manifest is valid"
+            Write-Host "   Module Name: $($manifestTest.Name)"
+            Write-Host "   Module Version: $($manifestTest.Version)"
+            
+            # Import the module using the full path
+            $module = Import-Module $moduleManifest.FullName -Force -PassThru -ErrorAction Stop
             Write-Host "✅ Module PSSEPCloud imported successfully"
             Write-Host "   Module Path: $($module.Path)"
             Write-Host "   Module Version: $($module.Version)"
             Write-Host "   Exported Commands: $($module.ExportedCommands.Count)"
-            Remove-Module PSSEPCloud -Force
+            
+            # Remove the module
+            Remove-Module PSSEPCloud -Force -ErrorAction SilentlyContinue
             Write-Host "✅ Module removed successfully"
+            
           } catch {
-            Write-Error "❌ Failed to import module PSSEPCloud: $($_.Exception.Message)"
+            Write-Error "❌ Failed to import module: $($_.Exception.Message)"
             Write-Host "Full error details: $($_.Exception)"
             Write-Host "=== Troubleshooting Information ==="
-            Write-Host "Built module location should be: $($env:buildFolderName)/module/"
-            Get-ChildItem -Path "$env:buildFolderName" -Recurse -Filter "*.psd1" | Format-Table FullName
+            Write-Host "Built module artifacts in $($env:buildFolderName):"
+            Get-ChildItem -Path "$env:buildFolderName" -Recurse -Filter "*.psd1" | Format-Table FullName, Directory, Name
+            Write-Host "PSModulePath contents:"
+            $env:PSModulePath -split ';' | ForEach-Object { Write-Host "  $_" }
             exit 1
           }
           
