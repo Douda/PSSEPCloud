@@ -1,5 +1,10 @@
-function New-BodyString($bodykeys, $parameters)
+function New-BodyString
 {
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        $bodykeys,
+        $parameters
+    )
     <#
     .SYNOPSIS
     Function to create the body payload for an API request
