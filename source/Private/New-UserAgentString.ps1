@@ -35,12 +35,14 @@ function New-UserAgentString
             'Win32NT'
             try
             {
-                Get-WmiObject -Class Win32_OperatingSystem -ErrorAction Stop | ForEach-Object {
+                Get-CimInstance -ClassName Win32_OperatingSystem -ErrorAction Stop | ForEach-Object {
                     ($_.Name -Split '\|')[0], $_.BuildNumber -join ''
                 }
             }
             catch
             {
+                Write-Verbose "Failed to retrieve OS information via WMI: $($_.Exception.Message)"
+                'Unknown', 'Unknown'
             }
         }
         else
@@ -74,7 +76,8 @@ function New-UserAgentString
         }
         catch
         {
-
+            Write-Verbose "Failed to retrieve module version: $($_.Exception.Message)"
+            '0.0.0'
         }
 
         $UserAgent = "$script:ModuleName-{0}--{1}--{2}" -f
@@ -84,13 +87,10 @@ function New-UserAgentString
 
         if ($UserAgentHash)
         {
-            $UserAgentHash.keys | ForEach-Object -Begin {
-                [string]$StringBuilder = ''
-            } -Process {
-                $StringBuilder += "--$_--$($UserAgentHash[$_])"
-            } -End {
-                $UserAgent += $StringBuilder
+            $AdditionalParams = $UserAgentHash.keys | ForEach-Object {
+                "--$_--$($UserAgentHash[$_])"
             }
+            $UserAgent += ($AdditionalParams -join '')
         }
 
         return $UserAgent
