@@ -25,7 +25,7 @@ function New-URIString
 
 
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param (
         [Parameter()]
         [string]
@@ -42,6 +42,11 @@ function New-URIString
         [string]
         $endpoint
     )
+
+    # Check if we should proceed with building the URI string
+    if (-not $PSCmdlet.ShouldProcess("URI String Construction", "Build URI string from base URL and endpoint")) {
+        return $null
+    }
 
     Write-Verbose -Message 'Verify that we have a valid base URL'
     if ($null -eq $baseURL -or '' -eq $baseURL) {

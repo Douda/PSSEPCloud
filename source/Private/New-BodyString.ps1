@@ -1,5 +1,10 @@
-function New-BodyString($bodykeys, $parameters)
+function New-BodyString
 {
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        $bodykeys,
+        $parameters
+    )
     <#
     .SYNOPSIS
     Function to create the body payload for an API request
@@ -14,6 +19,11 @@ function New-BodyString($bodykeys, $parameters)
     .PARAMETER parameters
     All of the parameter options available within the parent function
   #>
+
+    # Check if we should proceed with building the body string
+    if (-not $PSCmdlet.ShouldProcess("API Request Body", "Build body string from parameters")) {
+        return $null
+    }
 
     # If sending a GET request, no body is needed
     if ($resources.Method -eq 'Get')

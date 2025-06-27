@@ -1,5 +1,11 @@
-function New-URIQuery($queryKeys, $parameters, $uri)
+function New-URIQuery
 {
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        $queryKeys,
+        $parameters,
+        $uri
+    )
 
     <#
     .SYNOPSIS
@@ -17,6 +23,11 @@ function New-URIQuery($queryKeys, $parameters, $uri)
     #>
 
 
+
+    # Check if we should proceed with building the URI query
+    if (-not $PSCmdlet.ShouldProcess("URI Query Construction", "Build URI with query parameters")) {
+        return $uri
+    }
 
     # Construct the uri
     $builder = New-Object System.UriBuilder($uri)

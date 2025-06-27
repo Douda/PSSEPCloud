@@ -1,4 +1,9 @@
-function Set-ObjectTypeName($typename, $result) {
+function Set-ObjectTypeName {
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        $typename,
+        $result
+    )
     <#
         .SYNOPSIS
         Assigns an Object TypeName to cmdlet results
@@ -21,7 +26,9 @@ function Set-ObjectTypeName($typename, $result) {
             # Using ForEach-Object instead of .ForEach as .ForEach doesn't support single results.
             Write-Verbose -Message "Applying $typename TypeName to results"
             $result | ForEach-Object {
-                $_.PSObject.TypeNames.Insert(0, $typename)
+                if ($PSCmdlet.ShouldProcess($_.GetType().Name, "Set object type name to '$typename'")) {
+                    $_.PSObject.TypeNames.Insert(0, $typename)
+                }
             }
 
         }
