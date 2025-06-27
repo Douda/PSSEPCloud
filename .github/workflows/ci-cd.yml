@@ -85,6 +85,34 @@ jobs:
       - name: Run Tests (${{ matrix.displayName }})
         shell: pwsh
         run: |
+          # Debug module paths and availability
+          Write-Host "=== Module Loading Diagnostics ==="
+          Write-Host "PSModulePath: $env:PSModulePath"
+          Write-Host "PowerShell Version: $($PSVersionTable.PSVersion)"
+          Write-Host "Available PSSEPCloud modules:"
+          Get-Module -ListAvailable | Where-Object Name -eq 'PSSEPCloud' | Format-Table Name, Version, Path -AutoSize
+          
+          # Test module import before running tests
+          Write-Host "=== Module Import Verification ==="
+          try {
+            $module = Import-Module PSSEPCloud -Force -PassThru -ErrorAction Stop
+            Write-Host "✅ Module PSSEPCloud imported successfully"
+            Write-Host "   Module Path: $($module.Path)"
+            Write-Host "   Module Version: $($module.Version)"
+            Write-Host "   Exported Commands: $($module.ExportedCommands.Count)"
+            Remove-Module PSSEPCloud -Force
+            Write-Host "✅ Module removed successfully"
+          } catch {
+            Write-Error "❌ Failed to import module PSSEPCloud: $($_.Exception.Message)"
+            Write-Host "Full error details: $($_.Exception)"
+            Write-Host "=== Troubleshooting Information ==="
+            Write-Host "Built module location should be: $($env:buildFolderName)/module/"
+            Get-ChildItem -Path "$env:buildFolderName" -Recurse -Filter "*.psd1" | Format-Table FullName
+            exit 1
+          }
+          
+          # Run tests with proper shell selection
+          Write-Host "=== Running Tests ==="
           if ('${{ matrix.pwsh }}' -eq 'false') {
             powershell.exe -Command "./build.ps1 -tasks test -CodeCoverageThreshold 0"
           } else {
