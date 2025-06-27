@@ -33,6 +33,11 @@ function New-QueryURI
         [hashtable]$QueryStrings
     )
 
+    # Check if we should proceed with constructing the URI
+    if (-not $PSCmdlet.ShouldProcess("URI Construction", "Build URI from base URI and query strings")) {
+        return $BaseURI
+    }
+
     # Construct the URI
     $builder = New-Object System.UriBuilder($BaseURI)
     $query = [System.Web.HttpUtility]::ParseQueryString($builder.Query)

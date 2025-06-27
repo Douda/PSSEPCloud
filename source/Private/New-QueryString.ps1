@@ -21,6 +21,11 @@ function New-QueryString
 
     #>
 
+    # Check if we should proceed with building the query string
+    if (-not $PSCmdlet.ShouldProcess("URI Query String", "Build query string from parameters")) {
+        return $uri
+    }
+
     # TODO: It seems like there's a more elegant way to do this logic, but this code is stable and functional.
     foreach ($_ in $query)
     {

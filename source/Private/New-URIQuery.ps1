@@ -24,6 +24,11 @@ function New-URIQuery
 
 
 
+    # Check if we should proceed with building the URI query
+    if (-not $PSCmdlet.ShouldProcess("URI Query Construction", "Build URI with query parameters")) {
+        return $uri
+    }
+
     # Construct the uri
     $builder = New-Object System.UriBuilder($uri)
     $query = [System.Web.HttpUtility]::ParseQueryString($builder.Query)
