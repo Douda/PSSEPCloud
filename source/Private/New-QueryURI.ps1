@@ -27,6 +27,7 @@ function New-QueryURI
     #>
 
 
+    [CmdletBinding(SupportsShouldProcess)]
     param (
         [string]$BaseURI,
         [hashtable]$QueryStrings
