@@ -1,6 +1,5 @@
 BeforeAll {
-    . "$PSScriptRoot/../../../source/Private/Submit-Request.ps1"
-    . "$PSScriptRoot/../../../source/Private/Invoke-SEPCloudWebRequest.ps1"
+    Mock -CommandName Invoke-SEPCloudWebRequest -MockWith { return "Mocked Web Request" }
     Mock -CommandName New-QueryURI -MockWith { return "Mocked URI" }
 }
 
