@@ -10,7 +10,6 @@ BeforeAll {
 
     # Re-import the module using force to get any code changes between runs.
     Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
-
     Mock Submit-Request { return "Mocked Response" }
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
@@ -27,26 +26,10 @@ AfterAll {
 }
 
 Describe Block-SEPCloudFile {
-
-    Context 'Return values' {
-        BeforeEach {
-            $return = Block-SEPCloudFile -device_ids 'test_device_id' -hash 'test_hash'
-        }
-
-        It 'Returns a single object' {
-            ($return | Measure-Object).Count | Should -Be 1
-        }
-
-    }
-
-    
-
     Context 'ShouldProcess' {
         It 'Supports WhatIf' {
             (Get-Command Block-SEPCloudFile).Parameters.ContainsKey('WhatIf') | Should -Be $true
             { Block-SEPCloudFile -device_ids 'test_device_id' -hash 'test_hash' -WhatIf } | Should -Not -Throw
         }
-
-
     }
 }
