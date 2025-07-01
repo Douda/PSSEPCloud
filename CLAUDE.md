@@ -227,6 +227,8 @@ Initialize a Git repository for the module. Use GitVersion for versioning the mo
 ### CI/CD Pipeline
 Set up GitHub Actions for continuous integration and continuous deployment. Include tasks for building, testing, and deploying the module.
 
+**⚠️ TEMPORARY MODIFICATION**: GitHub Actions workflows (`.github/workflows/ci-cd.yml` and `.github/workflows/pr.yml`) have been temporarily modified to trigger on the `test-github-actions` branch for development testing. **These changes must be reverted before merging to main** by removing `test-github-actions` from the branch trigger lists.
+
 ### API Wrapper
 Design the module to interact with the Symantec Endpoint Security (SES) API. Follow the design pattern similar to the provided PowerShell function (Get-RubrikAPIData.ps1) for API interactions.
 
@@ -286,15 +288,6 @@ This includes:
 - **Phase 3**: Testing & Quality + Comprehensive Platform Testing
 - **Phase 4**: Finalization + Production Readiness
 - **PowerShell Approved Verb Commands**: Complete function reference list
-
-**Current Status**: 🎯 **Phase 2 Beginning - Solid Foundation Established**
-- **Exceptional Achievement**: Test failures reduced 69 → 32 (54% reduction)
-- **Submit-SESRequest**: 18/18 tests passing (100% - COMPLETE!)
-- **Connect-SESService**: 26/31 tests passing (84% success rate)
-- **Export-SESCredential**: 3/3 tests passing (100% fixed)
-- **Get-SESCredentialPath**: 3/3 tests passing (100% fixed)
-- **Core Infrastructure**: Stable and operational (160/192 tests passing - 83% pass rate)
-- **Status**: Phase 2 API wrapper development ready to begin
 
 ### 🔄 **Synchronization Requirements**
 
