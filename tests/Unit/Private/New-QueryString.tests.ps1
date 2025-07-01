@@ -8,18 +8,28 @@ $ProjectName = ((Get-ChildItem -Path $ProjectPath\*\*.psd1).Where{
 Import-Module $ProjectName
 
 InModuleScope $ProjectName {
-    Describe Get-PrivateFunction {
-        Context 'Default' {
-            BeforeEach {
-                $return = Get-PrivateFunction -PrivateData 'string'
+    Describe New-QueryString {
+        Context 'Function structure and parameters' {
+            It 'Should have required parameters' {
+                $command = Get-Command -Name 'New-QueryString' -ErrorAction SilentlyContinue
+                $command | Should -Not -BeNullOrEmpty
+                $command.Parameters.Keys | Should -Contain 'query'
+                $command.Parameters.Keys | Should -Contain 'uri'
             }
 
-            It 'Returns a single object' {
-                ($return | Measure-Object).Count | Should -Be 1
+            It 'Should support ShouldProcess' {
+                $command = Get-Command -Name 'New-QueryString'
+                $command.Parameters.Keys | Should -Contain 'WhatIf'
+                $command.Parameters.Keys | Should -Contain 'Confirm'
             }
 
-            It 'Returns a string based on the parameter PrivateData' {
-                $return | Should -Be 'string'
+            It 'Should support -WhatIf without throwing' {
+                { New-QueryString -query @() -uri 'https://example.com' -WhatIf } | Should -Not -Throw
+            }
+
+            It 'Should return expected URI when using -WhatIf' {
+                $result = New-QueryString -query @() -uri 'https://example.com' -WhatIf
+                $result | Should -Be 'https://example.com'
             }
         }
     }
