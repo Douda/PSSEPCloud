@@ -26,6 +26,7 @@
 - [x] **Module Manifest Export**: Updated `PSSEPCloud.psd1` to export all functions, resolving `CommandNotFoundException` for internal module functions.
 - [x] **Test Reversion**: Reverted `Block-SEPCloudFile.tests.ps1` to its original state with pipeline tests and `Submit-Request` mock, now that module export is fixed.
 - [x] **Test Refactoring**: Refactored `Block-SEPCloudFile.tests.ps1` to correctly import the module and mock its dependencies.
+- [x] **Debugging**: Added debug statements to `Block-SEPCloudFile.tests.ps1` to verify module and function loading.
 
 - [ ] **Core API Functions**: Development of main API wrapper functions
 - [ ] **Authentication Functions**: Complete authentication system
