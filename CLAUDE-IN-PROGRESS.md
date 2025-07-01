@@ -22,6 +22,7 @@
 - [x] **ShouldProcess Validation**: Added `SupportsShouldProcess=$true` to `Connect-SEPCloud.ps1`.
 - [x] **Pester Syntax Fix**: Corrected Pester 'Should' syntax in `Connect-SEPCloud.tests.ps1`.
 - [x] **Test Simplification**: Simplified `Block-SEPCloudFile.tests.ps1` to only include the `ShouldProcess` test for isolation.
+- [x] **Test Mocking**: Added mocking for `Submit-Request` in `Block-SEPCloudFile.tests.ps1` to prevent `CommandNotFoundException`.
 
 - [ ] **Core API Functions**: Development of main API wrapper functions
 - [ ] **Authentication Functions**: Complete authentication system
