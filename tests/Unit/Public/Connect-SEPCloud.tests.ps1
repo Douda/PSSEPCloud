@@ -37,8 +37,8 @@ Describe Connect-SEPCloud {
             Connect-SEPCloud -clientId $clientId -secret $secret
 
             # Assert
-            $script:SEPCloudConnection.header.Authorization | Should Be 'validToken'
-            $script:SEPCloudConnection.header.'User-Agent' | Should Be 'UserAgentString'
+                        $script:SEPCloudConnection.header.Authorization | Should -Be 'validToken'
+                        $script:SEPCloudConnection.header.'User-Agent' | Should -Be 'UserAgentString'
         }
     }
 
