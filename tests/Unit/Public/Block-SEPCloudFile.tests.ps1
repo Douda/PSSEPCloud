@@ -7,6 +7,10 @@ BeforeAll {
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = 'PSSEPCloud'
     $PSDefaultParameterValues['Mock:ModuleName'] = 'PSSEPCloud'
     $PSDefaultParameterValues['Should:ModuleName'] = 'PSSEPCloud'
+
+    Write-Host "Verifying module and function visibility:"
+    Get-Module PSSEPCloud | Write-Host
+    Get-Command Submit-Request | Write-Host
 }
 
 AfterAll {
