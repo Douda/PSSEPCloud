@@ -1,5 +1,5 @@
 BeforeAll {
-    Import-Module -Name PSSEPCloud -Force -ErrorAction Stop
+    Import-Module -Name PSSEPCloud -RequiredVersion 0.0.1 -Module (Join-Path $PSScriptRoot "../../../output/module/PSSEPCloud/0.0.1") -Force -ErrorAction Stop
 }
 
 Describe "Submit-Request Visibility" {
