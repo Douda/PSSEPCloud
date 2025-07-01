@@ -19,6 +19,7 @@
 - [x] **ShouldProcess Validation**: Added `SupportsShouldProcess=$true` to `Block-SEPCloudFile.ps1`.
 - [x] **Test Mocking**: Added mocking for `Submit-Request` in `Block-SEPCloudFile.tests.ps1` to prevent unauthorized errors.
 - [x] **Test Framework Improvement**: Updated test for Clear-SEPCloudAuthentication.tests.ps1 to remove irrelevant tests and correct ShouldProcess test.
+- [x] **ShouldProcess Validation**: Added `SupportsShouldProcess=$true` to `Connect-SEPCloud.ps1`.
 
 - [ ] **Core API Functions**: Development of main API wrapper functions
 - [ ] **Authentication Functions**: Complete authentication system
