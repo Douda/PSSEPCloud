@@ -1,251 +1,106 @@
-name: CI/CD Pipeline
+name: CI
 
 on:
   push:
-    branches: [ main ]
-    paths-ignore:
-      - 'CHANGELOG.md'
-    tags:
-      - 'v*'
-      - '!*-*'
+    branches: [ dev, main ]
   pull_request:
-    branches: [ main ]
-  workflow_dispatch:
-
-env:
-  buildFolderName: output
-  buildArtifactName: output
-  testResultFolderName: testResults
-  defaultBranch: main
+    branches: [ dev, main ]
 
 jobs:
   build:
-    name: Package Module
-    runs-on: windows-latest
-    outputs:
-      moduleVersion: ${{ steps.gitversion.outputs.nuGetVersionV2 }}
-      fullSemVer: ${{ steps.gitversion.outputs.fullSemVer }}
-    
+    name: Build Module (Ubuntu PowerShell 7.x)
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+    - uses: actions/checkout@v4
 
-      - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v1.1.1
-        with:
-          versionSpec: '5.x'
+    - name: Install PowerShell
+      shell: bash
+      run: |
+        # PowerShell is pre-installed on ubuntu-latest runners
+        pwsh --version
 
-      - name: Calculate ModuleVersion (GitVersion)
-        id: gitversion
-        uses: gittools/actions/gitversion/execute@v1.1.1
-        with:
-          useConfigFile: true
+    - name: Install dependencies
+      shell: pwsh
+      run: |
+        ./build.ps1 -ResolveDependency
 
-      - name: Build & Package Module
-        shell: pwsh
-        run: |
-          ./build.ps1 -ResolveDependency -tasks pack
-        env:
-          ModuleVersion: ${{ steps.gitversion.outputs.nuGetVersionV2 }}
+    - name: Build module
+      shell: pwsh
+      run: |
+        ./build.ps1 -Tasks build
 
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.buildArtifactName }}
-          path: ${{ env.buildFolderName }}/
-          retention-days: 7
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: module-build
+        path: output/module/
+        retention-days: 1
 
-  test:
-    name: Test on Windows
+  test-ubuntu:
+    name: Test on Ubuntu (PowerShell 7.x)
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: module-build
+        path: output/module/
+
+    - name: Install dependencies
+      shell: pwsh
+      run: |
+        ./build.ps1 -ResolveDependency
+
+    - name: Run tests
+      shell: pwsh
+      run: |
+        ./build.ps1 -Tasks test
+
+  test-windows-ps5:
+    name: Test on Windows (PowerShell 5.1)
     runs-on: windows-latest
     needs: build
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - displayName: 'Windows PowerShell 5.1'
-            pwsh: false
-            artifactName: 'CodeCoverageWinPS51'
-          - displayName: 'Windows PowerShell 7.x'
-            pwsh: true
-            artifactName: 'CodeCoverageWinPS7'
-    
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - name: Download Build Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ env.buildArtifactName }}
-          path: ${{ env.buildFolderName }}
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: module-build
+        path: output/module/
 
-      - name: Run Tests (${{ matrix.displayName }})
-        shell: pwsh
-        run: |
-          # Debug module paths and availability
-          Write-Host "=== Module Loading Diagnostics ==="
-          Write-Host "PSModulePath: $env:PSModulePath"
-          Write-Host "PowerShell Version: $($PSVersionTable.PSVersion)"
-          
-          # Debug: Show all downloaded artifacts
-          Write-Host "=== Downloaded Artifacts Structure ==="
-          Write-Host "Contents of $env:buildFolderName:"
-          Get-ChildItem -Path "$env:buildFolderName" -Recurse | Format-Table FullName, Length -AutoSize
-          
-          Write-Host "All .psd1 files in artifacts:"
-          Get-ChildItem -Path "$env:buildFolderName" -Recurse -Filter "*.psd1" | Format-Table FullName, Directory, Name -AutoSize
-          
-          Write-Host "Available PSSEPCloud modules:"
-          Get-Module -ListAvailable | Where-Object Name -eq 'PSSEPCloud' | Format-Table Name, Version, Path -AutoSize
-          
-          # Find and verify the built module
-          Write-Host "=== Module Import Verification ==="
-          try {
-            # Find the built module manifest
-            $moduleManifests = Get-ChildItem -Path "$env:buildFolderName" -Recurse -Filter "PSSEPCloud.psd1" | Where-Object { $_.Directory.Name -match '^\d+\.\d+\.\d+' }
-            if (-not $moduleManifests) {
-              throw "No built module manifest found in $env:buildFolderName"
-            }
-            
-            $moduleManifest = $moduleManifests | Select-Object -First 1
-            Write-Host "📁 Found module manifest: $($moduleManifest.FullName)"
-            
-            # Test module manifest validity
-            $manifestTest = Test-ModuleManifest -Path $moduleManifest.FullName -ErrorAction Stop
-            Write-Host "✅ Module manifest is valid"
-            Write-Host "   Module Name: $($manifestTest.Name)"
-            Write-Host "   Module Version: $($manifestTest.Version)"
-            
-            # Import the module using the full path
-            $module = Import-Module $moduleManifest.FullName -Force -PassThru -ErrorAction Stop
-            Write-Host "✅ Module PSSEPCloud imported successfully"
-            Write-Host "   Module Path: $($module.Path)"
-            Write-Host "   Module Version: $($module.Version)"
-            Write-Host "   Exported Commands: $($module.ExportedCommands.Count)"
-            
-            # Remove the module
-            Remove-Module PSSEPCloud -Force -ErrorAction SilentlyContinue
-            Write-Host "✅ Module removed successfully"
-            
-          } catch {
-            Write-Error "❌ Failed to import module: $($_.Exception.Message)"
-            Write-Host "Full error details: $($_.Exception)"
-            Write-Host "=== Troubleshooting Information ==="
-            Write-Host "Built module artifacts in $($env:buildFolderName):"
-            Get-ChildItem -Path "$env:buildFolderName" -Recurse -Filter "*.psd1" | Format-Table FullName, Directory, Name
-            Write-Host "PSModulePath contents:"
-            $env:PSModulePath -split ';' | ForEach-Object { Write-Host "  $_" }
-            exit 1
-          }
-          
-          # Run tests with proper shell selection
-          Write-Host "=== Running Tests ==="
-          if ('${{ matrix.pwsh }}' -eq 'false') {
-            powershell.exe -Command "./build.ps1 -tasks test -CodeCoverageThreshold 0"
-          } else {
-            ./build.ps1 -tasks test -CodeCoverageThreshold 0
-          }
-        env:
-          ModuleVersion: ${{ needs.build.outputs.moduleVersion }}
+    - name: Install dependencies
+      shell: powershell
+      run: |
+        .\build.ps1 -ResolveDependency
 
-      - name: Publish Test Results
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: Test Results (${{ matrix.displayName }})
-          path: '${{ env.buildFolderName }}/${{ env.testResultFolderName }}/NUnit*.xml'
-          reporter: java-junit
+    - name: Run tests
+      shell: powershell
+      run: |
+        .\build.ps1 -Tasks test
 
-      - name: Upload Test Results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: ${{ matrix.artifactName }}
-          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
-          retention-days: 30
-
-  code-coverage:
-    name: Publish Code Coverage
+  test-windows-ps7:
+    name: Test on Windows (PowerShell 7.x)
     runs-on: windows-latest
-    needs: test
-    if: always()
-    
+    needs: build
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - name: Download Build Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ env.buildArtifactName }}
-          path: ${{ env.buildFolderName }}
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: module-build
+        path: output/module/
 
-      - name: Download Test Artifacts (PS 5.1)
-        uses: actions/download-artifact@v4
-        with:
-          name: CodeCoverageWinPS51
-          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}
+    - name: Install dependencies
+      shell: pwsh
+      run: |
+        .\build.ps1 -ResolveDependency
 
-      - name: Download Test Artifacts (PS 7.x)
-        uses: actions/download-artifact@v4
-        with:
-          name: CodeCoverageWinPS7
-          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}
-
-      # Optional: Merge code coverage files if supported by build configuration
-      # - name: Merge Code Coverage Files
-      #   shell: pwsh
-      #   run: |
-      #     ./build.ps1 -tasks merge
-
-      # Optional: Upload to Codecov
-      # - name: Upload Coverage to Codecov
-      #   uses: codecov/codecov-action@v3
-      #   with:
-      #     file: ./${{ env.buildFolderName }}/${{ env.testResultFolderName }}/JaCoCo_coverage.xml
-      #     flags: unit
-      #     name: codecov-umbrella
-
-  deploy:
-    name: Deploy Module
-    runs-on: windows-latest
-    needs: [build, test]
-    if: |
-      github.ref == 'refs/heads/main' || 
-      startsWith(github.ref, 'refs/tags/v')
-    environment: production
-    
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Download Build Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ env.buildArtifactName }}
-          path: ${{ env.buildFolderName }}
-
-      - name: Publish Release
-        shell: pwsh
-        run: |
-          ./build.ps1 -tasks publish
-        env:
-          GitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          GalleryApiToken: ${{ secrets.GALLERY_API_TOKEN }}
-          ReleaseBranch: ${{ env.defaultBranch }}
-          MainGitBranch: ${{ env.defaultBranch }}
-
-      - name: Create Changelog PR
-        shell: pwsh
-        run: |
-          ./build.ps1 -tasks Create_ChangeLog_GitHub_PR
-        env:
-          GitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          ReleaseBranch: ${{ env.defaultBranch }}
-          MainGitBranch: ${{ env.defaultBranch }}
-        continue-on-error: true
+    - name: Run tests
+      shell: pwsh
+      run: |
+        .\build.ps1 -Tasks test
