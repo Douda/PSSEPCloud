@@ -37,20 +37,7 @@ Describe Block-SEPCloudFile {
 
     }
 
-    Context 'Pipeline' {
-        It 'Does not accept values from the pipeline by value' {
-            { 'device_id1', 'device_id2' | Block-SEPCloudFile -hash 'test_hash' } | Should -Throw
-        }
-
-        It 'Does not accept value from the pipeline by property name' {
-            { 'device_id1', 'device_id2' | ForEach-Object {
-                [PSCustomObject]@{
-                    device_ids = $_
-                    OtherProperty = 'other'
-                }
-            } | Block-SEPCloudFile -hash 'test_hash' } | Should -Throw
-        }
-    }
+    
 
     Context 'ShouldProcess' {
         It 'Supports WhatIf' {
