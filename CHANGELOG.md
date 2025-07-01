@@ -14,7 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- For changes in existing functionality.
+- Enhanced test coverage for private utility functions (New-BodyString, New-QueryString, New-URIQuery)
+- Improved ShouldProcess validation testing for helper functions
+- Updated test structure to match actual function signatures and behavior
 
 ### Deprecated
 
