@@ -31,6 +31,7 @@
 - [x] **Test Simplification**: Simplified `Block-SEPCloudFile.tests.ps1` to remove explicit module import and debug statements, relying on build process for module loading.
 - [x] **Test Visibility**: Created `Test-SubmitRequestVisibility.tests.ps1` to test visibility of `Submit-Request`.
 - [x] **Pester Syntax Fix**: Corrected missing closing brace in `Block-SEPCloudFile.tests.ps1`.
+- [x] **Test Environment Isolation**: Created `simple.tests.ps1` to isolate and test basic Pester functionality.
 
 - [ ] **Core API Functions**: Development of main API wrapper functions
 - [ ] **Authentication Functions**: Complete authentication system
