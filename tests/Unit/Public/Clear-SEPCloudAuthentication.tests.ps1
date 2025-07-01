@@ -24,56 +24,21 @@ AfterAll {
     Remove-Module -Name $script:moduleName
 }
 
-Describe Get-Something {
+Describe Clear-SEPCloudAuthentication {
     BeforeAll {
         Mock -CommandName Test-SEPCloudToken -MockWith { $PrivateData }
+    Mock -CommandName Remove-Item -MockWith { "Mocked Remove-Item" }
     }
-    Context 'Return values' {
-        BeforeEach {
-            $return = Get-Something -Data 'value'
-        }
-
-        It 'Returns a single object' {
-            ($return | Measure-Object).Count | Should -Be 1
-        }
-
-        It 'Returns a string from Test-SEPCloudToken' {
-            Assert-MockCalled Test-SEPCloudToken -Times 1 -Exactly -Scope It
-            $return | Should -Be 'value'
-        }
-    }
-
-    Context 'Pipeline' {
-        It 'Accepts values from the pipeline by value' {
-            $return = 'value1', 'value2' | Get-Something
-                Assert-MockCalled Test-SEPCloudToken -Times 2 -Exactly -Scope It
-            $return[0] | Should -Be 'value1'
-            $return[1] | Should -Be 'value2'
-        }
-
-        It 'Accepts value from the pipeline by property name' {
-            $return = 'value1', 'value2' | ForEach-Object {
-                [PSCustomObject]@{
-                    Data = $_
-                    OtherProperty = 'other'
-                }
-            } | Get-Something
-
-                Assert-MockCalled Test-SEPCloudToken -Times 2 -Exactly -Scope It
-            $return[0] | Should -Be 'value1'
-            $return[1] | Should -Be 'value2'
-        }
-    }
+    
 
     Context 'ShouldProcess' {
         It 'Supports WhatIf' {
-            (Get-Command Get-Something).Parameters.ContainsKey('WhatIf') | Should -Be $true
-            { Get-Something -Data 'value' -WhatIf } | Should -Not -Throw
+            (Get-Command Clear-SEPCloudAuthentication).Parameters.ContainsKey('WhatIf') | Should -Be $true
+            { Clear-SEPCloudAuthentication -WhatIf } | Should -Not -Throw
         }
 
         It 'Does not call Test-SEPCloudToken if WhatIf is set' {
-            $return = Get-Something -Data 'value' -WhatIf
-            $return | Should -BeNullOrEmpty
+            Clear-SEPCloudAuthentication -WhatIf
             Assert-MockCalled Test-SEPCloudToken -Times 0 -Scope It
         }
     }
