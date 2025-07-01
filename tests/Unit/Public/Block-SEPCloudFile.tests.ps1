@@ -1,21 +1,12 @@
 BeforeAll {
-    $script:moduleName = 'PSSEPCloud'
+    Import-Module -Name PSSEPCloud -Function Submit-Request -ErrorAction Stop
+    Mock -CommandName Submit-Request -MockWith { return "Mocked Response" }
+    Mock -CommandName Test-SEPCloudConnection -MockWith { return $true }
+    Mock -CommandName Get-SEPCloudAPIData -MockWith { return @{ URI = "test"; Method = "POST"; ObjectTName = "TestObject" } }
 
-    # If the module is not found, run the build task 'noop'.
-    if (-not (Get-Module -Name $script:moduleName -ListAvailable))
-    {
-        # Redirect all streams to $null, except the error stream (stream 2)
-        & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
-    }
-
-    # Re-import the module using force to get any code changes between runs.
-    Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
-    Mock Submit-Request { return "Mocked Response" }
-    Mock Submit-Request { return "Mocked Response" }
-
-    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['InModuleScope:ModuleName'] = 'PSSEPCloud'
+    $PSDefaultParameterValues['Mock:ModuleName'] = 'PSSEPCloud'
+    $PSDefaultParameterValues['Should:ModuleName'] = 'PSSEPCloud'
 }
 
 AfterAll {
@@ -23,19 +14,10 @@ AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Should:ModuleName')
 
-    Remove-Module -Name $script:moduleName
+    Remove-Module -Name 'PSSEPCloud'
 }
 
 Describe Block-SEPCloudFile {
-    BeforeAll {
-    Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
-    BeforeAll {
-        Import-Module -Name PSSEPCloud -Function Submit-Request -ErrorAction Stop
-        Mock -CommandName Submit-Request -MockWith { return "Mocked Response" }
-        Mock -CommandName Test-SEPCloudConnection -MockWith { return $true }
-        Mock -CommandName Get-SEPCloudAPIData -MockWith { return @{ URI = "test"; Method = "POST"; ObjectTName = "TestObject" } }
-    }
-}
     Context 'Return values' {
         BeforeEach {
             $return = Block-SEPCloudFile -device_ids 'test_device_id' -hash 'test_hash'
