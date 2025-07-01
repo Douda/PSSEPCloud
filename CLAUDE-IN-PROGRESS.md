@@ -21,6 +21,7 @@
 - [x] **Test Framework Improvement**: Updated test for Clear-SEPCloudAuthentication.tests.ps1 to remove irrelevant tests and correct ShouldProcess test.
 - [x] **ShouldProcess Validation**: Added `SupportsShouldProcess=$true` to `Connect-SEPCloud.ps1`.
 - [x] **Pester Syntax Fix**: Corrected Pester 'Should' syntax in `Connect-SEPCloud.tests.ps1`.
+- [x] **Test Simplification**: Simplified `Block-SEPCloudFile.tests.ps1` to only include the `ShouldProcess` test for isolation.
 
 - [ ] **Core API Functions**: Development of main API wrapper functions
 - [ ] **Authentication Functions**: Complete authentication system
