@@ -25,7 +25,7 @@
 - [x] **Test Mocking**: Added mocking for `Submit-Request` in `Block-SEPCloudFile.tests.ps1` to prevent `CommandNotFoundException`.
 - [x] **Module Manifest Export**: Updated `PSSEPCloud.psd1` to export all functions, resolving `CommandNotFoundException` for internal module functions.
 - [x] **Test Reversion**: Reverted `Block-SEPCloudFile.tests.ps1` to its original state with pipeline tests and `Submit-Request` mock, now that module export is fixed.
-- [x] **Test Import**: Explicitly imported `Submit-Request` in `Block-SEPCloudFile.tests.ps1` to resolve `CommandNotFoundException`.
+- [x] **Test Import**: Explicitly imported `Submit-Request` and added additional mocks in `Block-SEPCloudFile.tests.ps1` to resolve `CommandNotFoundException`.
 
 - [ ] **Core API Functions**: Development of main API wrapper functions
 - [ ] **Authentication Functions**: Complete authentication system
