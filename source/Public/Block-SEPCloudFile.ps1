@@ -18,7 +18,7 @@ function Block-SEPCloudFile
         BLocks a specific file on a specific computer by its device_id and hash
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$true)]
     # Suppress the unused parameter warning for the parameters that are not used in this function
     # They are used via BodyString & URIString functions
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSReviewUnusedParameter", "")]
