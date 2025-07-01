@@ -28,6 +28,7 @@
 - [x] **Test Refactoring**: Refactored `Block-SEPCloudFile.tests.ps1` to correctly import the module and mock its dependencies.
 - [x] **Debugging**: Added debug statements to `Block-SEPCloudFile.tests.ps1` to verify module and function loading.
 - [x] **Test Environment Setup**: Ensured `Block-SEPCloudFile.tests.ps1` has proper module import and mocking for all dependencies.
+- [x] **Test Simplification**: Simplified `Block-SEPCloudFile.tests.ps1` to remove explicit module import and debug statements, relying on build process for module loading.
 
 - [ ] **Core API Functions**: Development of main API wrapper functions
 - [ ] **Authentication Functions**: Complete authentication system

@@ -1,12 +1,13 @@
 BeforeAll {
-    . "$PSScriptRoot/../../../source/Private/Submit-Request.ps1"
+    $script:moduleName = 'PSSEPCloud'
+
+    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:moduleName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:moduleName
+
     Mock -CommandName Submit-Request -MockWith { return "Mocked Response" }
     Mock -CommandName Test-SEPCloudConnection -MockWith { return $true }
     Mock -CommandName Get-SEPCloudAPIData -MockWith { return @{ URI = "test"; Method = "POST"; ObjectTName = "TestObject" } }
-
-    $PSDefaultParameterValues['InModuleScope:ModuleName'] = 'PSSEPCloud'
-    $PSDefaultParameterValues['Mock:ModuleName'] = 'PSSEPCloud'
-    $PSDefaultParameterValues['Should:ModuleName'] = 'PSSEPCloud'
 }
 
 AfterAll {
