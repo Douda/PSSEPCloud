@@ -32,6 +32,8 @@ Describe Block-SEPCloudFile {
     BeforeAll {
         Import-Module -Name PSSEPCloud -Function Submit-Request -ErrorAction Stop
         Mock -CommandName Submit-Request -MockWith { return "Mocked Response" }
+        Mock -CommandName Test-SEPCloudConnection -MockWith { return $true }
+        Mock -CommandName Get-SEPCloudAPIData -MockWith { return @{ URI = "test"; Method = "POST"; ObjectTName = "TestObject" } }
     }
 }
     Context 'Return values' {
