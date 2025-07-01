@@ -24,11 +24,11 @@ AfterAll {
     Remove-Module -Name $script:moduleName
 }
 
-Describe Get-Something {
+Describe Block-SEPCloudFile {
 
     Context 'Return values' {
         BeforeEach {
-            $return = Get-Something -Data 'value'
+            $return = Block-SEPCloudFile -device_ids 'test_device_id' -hash 'test_hash'
         }
 
         It 'Returns a single object' {
@@ -39,30 +39,30 @@ Describe Get-Something {
 
     Context 'Pipeline' {
         It 'Accepts values from the pipeline by value' {
-            $return = 'value1', 'value2' | Get-Something
+            $return = 'device_id1', 'device_id2' | Block-SEPCloudFile -hash 'test_hash'
 
-            $return[0] | Should -Be 'value1'
-            $return[1] | Should -Be 'value2'
+            $return[0] | Should -Be 'device_id1'
+            $return[1] | Should -Be 'device_id2'
         }
 
         It 'Accepts value from the pipeline by property name' {
-            $return = 'value1', 'value2' | ForEach-Object {
+            $return = 'device_id1', 'device_id2' | ForEach-Object {
                 [PSCustomObject]@{
-                    Data = $_
+                    device_ids = $_
                     OtherProperty = 'other'
                 }
-            } | Get-Something
+            } | Block-SEPCloudFile -hash 'test_hash'
 
 
-            $return[0] | Should -Be 'value1'
-            $return[1] | Should -Be 'value2'
+            $return[0] | Should -Be 'device_id1'
+            $return[1] | Should -Be 'device_id2'
         }
     }
 
     Context 'ShouldProcess' {
         It 'Supports WhatIf' {
-            (Get-Command Get-Something).Parameters.ContainsKey('WhatIf') | Should -Be $true
-            { Get-Something -Data 'value' -WhatIf } | Should -Not -Throw
+            (Get-Command Block-SEPCloudFile).Parameters.ContainsKey('WhatIf') | Should -Be $true
+            { Block-SEPCloudFile -device_ids 'test_device_id' -hash 'test_hash' -WhatIf } | Should -Not -Throw
         }
 
 
