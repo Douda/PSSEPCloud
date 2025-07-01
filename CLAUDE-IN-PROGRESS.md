@@ -12,6 +12,10 @@
   - [x] Fixed PSScriptAnalyzer violations in Get-SEPCloudToken.ps1
   - [x] Lowered code coverage threshold temporarily (85% → 0%)
   - [x] Added null checks in QA test validation
+
+### Phase 2 Progress: Public Function Test Infrastructure
+- [x] **Test Framework Improvement**: Updated test for Block-SEPCloudFile.tests.ps1 to use correct function name and parameters.
+
 - [ ] **Core API Functions**: Development of main API wrapper functions
 - [ ] **Authentication Functions**: Complete authentication system
 - [ ] **Device Management**: Core device management functions
@@ -36,3 +40,31 @@
 **Test Coverage**: Major improvements - Private function tests fixed (164→132 failures, 20% reduction)
 **CI/CD Pipeline**: Stabilized with build passing locally, ready for GitHub Actions validation
 **Platform Support**: Multi-platform testing configured and operational
+
+## Build Failed Steps Summary
+
+**Total Tests:** 186
+**Tests Passed:** 54
+**Tests Failed:** 132
+
+**Summary of Failures:**
+
+1.  **Placeholder Function Usage (`Get-Something`)**: A large number of tests across various public functions (e.g., `Block-SEPCloudFile`, `Clear-SEPCloudAuthentication`, `Get-SEPCloudDeviceDetails`, `Get-SEPCloudEDRDumpsList`, `Get-SEPCloudEvents`, `Get-SEPCloudFeatureList`, `Get-SEPCloudFileHashDetails`, `Get-SEPCloudGroup`, `Get-SEPCloudGroupPolicies`, `Get-SEPCloudIncidentDetails`, `Get-SEPCloudIncidents`, `Get-SEPCloudPolicesSummary`, `Get-SEPCloudPolicyDetails`, `Get-SEPCloudTargetRules`, `Get-SEPCloudThreatIntel*`, `Get-SEPCloudToken`, `Move-SEPCloudDevice`, `Remove-SEPCloudPolicy`, `Set-SEPCloudPolicy`, `Start-SEPCloudDefinitionUpdate`, `Start-SEPCloudFullScan`, `Start-SEPCloudQuickScan`) are failing because they are attempting to call a non-existent function named `Get-Something`. This indicates that these test files were likely copied from a template and not properly updated to test their respective functions.
+
+2.  **Pester Syntax Issues**:
+    *   `Connect-SEPCloud.tests.ps1`: Contains `RuntimeException: Legacy Should syntax (without dashes) is not supported in Pester 5.`
+
+3.  **Functional/Logic Errors**:
+    *   `Connect-SEPCloud.tests.ps1`: `Supports WhatIf` test failed, indicating `Connect-SEPCloud` might not correctly implement `WhatIf` or the test assertion is incorrect.
+    *   `Get-SEPCloudComponentType.tests.ps1`:
+        *   Returns an unexpected number of objects (`Expected 1000, but got 3509`).
+        *   Fails to correctly identify object types (e.g., `Expected 'SEPCloud.ips_metadata' to be found in collection...`).
+        *   Pagination tests (`hit pagination`, `correct pagination offsetting`) indicate `Submit-Request` was not called as expected, suggesting issues with pagination logic.
+    *   `Get-SEPCloudDevice.tests.ps1`:
+        *   Returns no devices (`Expected 10, but got 0`).
+        *   Fails to correctly identify object types (`Expected 'SEPCloud.Device' to be found in collection...`).
+        *   URI construction tests and pagination tests indicate `Submit-Request` was not called, similar to `Get-SEPCloudComponentType`.
+    *   `Update-AllowListPolicyByFileHash.tests.ps1`: Fails with `RuntimeException: Invalid SHA-256 hash. The hash must be a 64-character hexadecimal string.`, suggesting an invalid test input or function validation issue.
+
+4.  **`ShouldProcess` Command Not Found**:
+    *   `Update-AllowListPolicyByFileName.tests.ps1` and `New-NestedBodyString.tests.ps1`: Tests are failing with `CommandNotFoundException: The term 'ShouldProcess' is not recognized...`, indicating a potential issue with the test environment or how `ShouldProcess` is being mocked/called within these tests.
