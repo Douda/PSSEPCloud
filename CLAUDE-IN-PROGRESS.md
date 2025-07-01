@@ -17,6 +17,7 @@
 - [x] **Test Framework Improvement**: Updated test for Block-SEPCloudFile.tests.ps1 to use correct function name and parameters.
 - [x] **Test Framework Improvement**: Corrected pipeline tests for Block-SEPCloudFile.tests.ps1 to reflect that the function does not accept pipeline input.
 - [x] **ShouldProcess Validation**: Added `SupportsShouldProcess=$true` to `Block-SEPCloudFile.ps1`.
+- [x] **Test Mocking**: Added mocking for `Submit-Request` in `Block-SEPCloudFile.tests.ps1` to prevent unauthorized errors.
 
 - [ ] **Core API Functions**: Development of main API wrapper functions
 - [ ] **Authentication Functions**: Complete authentication system
