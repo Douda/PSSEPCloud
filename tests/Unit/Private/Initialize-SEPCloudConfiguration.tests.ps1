@@ -8,20 +8,17 @@ $ProjectName = ((Get-ChildItem -Path $ProjectPath\*\*.psd1).Where{
 Import-Module $ProjectName
 
 InModuleScope $ProjectName {
-    Describe Get-PrivateFunction {
+    Describe Initialize-SEPCloudConfiguration {
         Context 'Default' {
             BeforeEach {
-                $return = Get-PrivateFunction -PrivateData 'string'
+                $command = Get-Command -Name 'Initialize-SEPCloudConfiguration' -ErrorAction SilentlyContinue
             }
 
-            It 'Returns a single object' {
-                ($return | Measure-Object).Count | Should -Be 1
-            }
+            It 'Should exist' { $command | Should -Not -BeNullOrEmpty }
 
-            It 'Returns a string based on the parameter PrivateData' {
-                $return | Should -Be 'string'
-            }
+            It 'Should be a function' { $command.CommandType | Should -Be 'Function' }
         }
     }
 }
+
 
