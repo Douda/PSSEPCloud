@@ -48,12 +48,12 @@
 ## Build Failed Steps Summary
 
 **Total Tests:** 186
-**Tests Passed:** 54
-**Tests Failed:** 132
+**Tests Passed:** 56
+**Tests Failed:** 124
 
 **Summary of Failures:**
 
-1.  **Placeholder Function Usage (`Get-Something`)**: A large number of tests across various public functions (e.g., `Block-SEPCloudFile`, `Clear-SEPCloudAuthentication`, `Get-SEPCloudDeviceDetails`, `Get-SEPCloudEDRDumpsList`, `Get-SEPCloudEvents`, `Get-SEPCloudFeatureList`, `Get-SEPCloudFileHashDetails`, `Get-SEPCloudGroup`, `Get-SEPCloudGroupPolicies`, `Get-SEPCloudIncidentDetails`, `Get-SEPCloudIncidents`, `Get-SEPCloudPolicesSummary`, `Get-SEPCloudPolicyDetails`, `Get-SEPCloudTargetRules`, `Get-SEPCloudThreatIntel*`, `Get-SEPCloudToken`, `Move-SEPCloudDevice`, `Remove-SEPCloudPolicy`, `Set-SEPCloudPolicy`, `Start-SEPCloudDefinitionUpdate`, `Start-SEPCloudFullScan`, `Start-SEPCloudQuickScan`) are failing because they are attempting to call a non-existent function named `Get-Something`. This indicates that these test files were likely copied from a template and not properly updated to test their respective functions.
+1.  **Placeholder Function Usage (`Get-Something`)**: A large number of tests across various public functions (e.g., `Clear-SEPCloudAuthentication`, `Get-SEPCloudDeviceDetails`, `Get-SEPCloudEDRDumpsList`, `Get-SEPCloudEvents`, `Get-SEPCloudFeatureList`, `Get-SEPCloudFileHashDetails`, `Get-SEPCloudGroup`, `Get-SEPCloudGroupPolicies`, `Get-SEPCloudIncidentDetails`, `Get-SEPCloudIncidents`, `Get-SEPCloudPolicesSummary`, `Get-SEPCloudPolicyDetails`, `Get-SEPCloudTargetRules`, `Get-SEPCloudThreatIntel*`, `Get-SEPCloudToken`, `Move-SEPCloudDevice`, `Remove-SEPCloudPolicy`, `Set-SEPCloudPolicy`, `Start-SEPCloudDefinitionUpdate`, `Start-SEPCloudFullScan`, `Start-SEPCloudQuickScan`) are failing because they are attempting to call a non-existent function named `Get-Something`. This indicates that these test files were likely copied from a template and not properly updated to test their respective functions.
 
 2.  **Pester Syntax Issues**:
     *   `Connect-SEPCloud.tests.ps1`: Contains `RuntimeException: Legacy Should syntax (without dashes) is not supported in Pester 5.`
