@@ -65,6 +65,8 @@ function Get-SEPCloudToken {
         $cacheOnly
     )
 
+    process {
+
     # If -cacheOnly do not attempt to prompt for credentials for unattended mode
     if ($cacheOnly) {
         return $null
@@ -132,7 +134,11 @@ function Get-SEPCloudToken {
             Write-Verbose -Message "Token in-memory is still valid"
             return $script:SEPCloudConnection.AccessToken
         } else {
-            try { Remove-Item -Path $script:configuration.cachedTokenPath -ErrorAction SilentlyContinue } catch {}
+            try { 
+                Remove-Item -Path $script:configuration.cachedTokenPath -ErrorAction SilentlyContinue 
+            } catch {
+                Write-Verbose "Failed to remove cached token: $($_.Exception.Message)"
+            }
             $script:SEPCloudConnection.AccessToken = $null
         }
     }
@@ -146,7 +152,11 @@ function Get-SEPCloudToken {
             return $cachedToken
         } else {
             Write-Verbose -Message "Token from disk expired - deleting"
-            try { Remove-Item -Path $script:configuration.cachedTokenPath -ErrorAction SilentlyContinue } catch {}
+            try { 
+                Remove-Item -Path $script:configuration.cachedTokenPath -ErrorAction SilentlyContinue 
+            } catch {
+                Write-Verbose "Failed to remove cached token: $($_.Exception.Message)"
+            }
             $script:SEPCloudConnection.AccessToken = $null
         }
     }
@@ -289,5 +299,6 @@ function Get-SEPCloudToken {
         $message = $message + "delete cached credentials"
         $message = $message + "`n" + "Error : $($_.Exception.Response.StatusCode) : $($_.Exception.Response.StatusDescription)"
         Write-Verbose -Message $message
+    }
     }
 }
