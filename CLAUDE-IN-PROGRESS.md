@@ -35,6 +35,8 @@
 - [x] **Test Module Import**: Updated `Test-SubmitRequestVisibility.tests.ps1` to correctly import the module using `Get-Module -ListAvailable`.
 - [x] **Test Module Import**: Updated `Test-SubmitRequestVisibility.tests.ps1` to dot-source `Submit-Request.ps1` and `Invoke-SEPCloudWebRequest.ps1` directly, and mocked `New-QueryURI`.
 - [x] **Test Refactoring**: Refactored `Test-SubmitRequestVisibility.tests.ps1` to directly dot-source private functions and mock dependencies.
+- [x] **Test Environment Setup**: Modified `Common-InitializeProjectModule.ps1` to dynamically dot-source all private and public function files.
+- [x] **Test Reversion**: Reverted `Test-SubmitRequestVisibility.tests.ps1` to rely on `Common-InitializeProjectModule.ps1` for module loading.
 
 - [ ] **Core API Functions**: Development of main API wrapper functions
 - [ ] **Authentication Functions**: Complete authentication system
