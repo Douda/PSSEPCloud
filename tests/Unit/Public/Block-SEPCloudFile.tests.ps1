@@ -28,8 +28,12 @@ AfterAll {
 
 Describe Block-SEPCloudFile {
     BeforeAll {
+    Import-Module -Name $script:moduleName -Force -ErrorAction 'Stop'
+    BeforeAll {
+        Import-Module -Name PSSEPCloud -Function Submit-Request -ErrorAction Stop
         Mock -CommandName Submit-Request -MockWith { return "Mocked Response" }
     }
+}
     Context 'Return values' {
         BeforeEach {
             $return = Block-SEPCloudFile -device_ids 'test_device_id' -hash 'test_hash'
