@@ -1,5 +1,5 @@
 function Connect-SEPCloud {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$true)]
     param (
         # Additional information to be added, takes hashtable as input
         [hashtable] $UserAgent,
