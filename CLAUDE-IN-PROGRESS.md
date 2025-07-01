@@ -34,6 +34,7 @@
 - [x] **Test Environment Isolation**: Created `simple.tests.ps1` to isolate and test basic Pester functionality.
 - [x] **Test Module Import**: Updated `Test-SubmitRequestVisibility.tests.ps1` to correctly import the module using `Get-Module -ListAvailable`.
 - [x] **Test Module Import**: Updated `Test-SubmitRequestVisibility.tests.ps1` to dot-source `Submit-Request.ps1` and `Invoke-SEPCloudWebRequest.ps1` directly, and mocked `New-QueryURI`.
+- [x] **Test Refactoring**: Refactored `Test-SubmitRequestVisibility.tests.ps1` to directly dot-source private functions and mock dependencies.
 
 - [ ] **Core API Functions**: Development of main API wrapper functions
 - [ ] **Authentication Functions**: Complete authentication system
