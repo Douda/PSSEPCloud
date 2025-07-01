@@ -15,6 +15,7 @@
 
 ### Phase 2 Progress: Public Function Test Infrastructure
 - [x] **Test Framework Improvement**: Updated test for Block-SEPCloudFile.tests.ps1 to use correct function name and parameters.
+- [x] **Test Framework Improvement**: Corrected pipeline tests for Block-SEPCloudFile.tests.ps1 to reflect that the function does not accept pipeline input.
 
 - [ ] **Core API Functions**: Development of main API wrapper functions
 - [ ] **Authentication Functions**: Complete authentication system
