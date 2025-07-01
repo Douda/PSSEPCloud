@@ -30,6 +30,7 @@
 - [x] **Test Environment Setup**: Ensured `Block-SEPCloudFile.tests.ps1` has proper module import and mocking for all dependencies.
 - [x] **Test Simplification**: Simplified `Block-SEPCloudFile.tests.ps1` to remove explicit module import and debug statements, relying on build process for module loading.
 - [x] **Test Visibility**: Created `Test-SubmitRequestVisibility.tests.ps1` to test visibility of `Submit-Request`.
+- [x] **Pester Syntax Fix**: Corrected missing closing brace in `Block-SEPCloudFile.tests.ps1`.
 
 - [ ] **Core API Functions**: Development of main API wrapper functions
 - [ ] **Authentication Functions**: Complete authentication system
