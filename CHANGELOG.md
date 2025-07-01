@@ -29,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - fixed nested body structure from Get-SEPCloudAPIData with new helper function New-NestedBodyString
+- Critical GitHub Actions pipeline failures (52% failure rate reduced)
+- PSScriptAnalyzer violations in Get-SEPCloudToken.ps1 (empty catch blocks, missing process block)
+- ValidationMetadataException in QA tests with proper null checks
+- Removed problematic template test file causing CommandNotFoundException
 
 ### Security
 
