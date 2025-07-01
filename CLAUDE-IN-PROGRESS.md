@@ -32,7 +32,7 @@
 - [x] **Test Visibility**: Created `Test-SubmitRequestVisibility.tests.ps1` to test visibility of `Submit-Request`.
 - [x] **Pester Syntax Fix**: Corrected missing closing brace in `Block-SEPCloudFile.tests.ps1`.
 - [x] **Test Environment Isolation**: Created `simple.tests.ps1` to isolate and test basic Pester functionality.
-- [x] **Test Module Import**: Updated `Test-SubmitRequestVisibility.tests.ps1` to explicitly import the module from the output directory.
+- [x] **Test Module Import**: Updated `Test-SubmitRequestVisibility.tests.ps1` to correctly import the module using `Get-Module -ListAvailable`.
 
 - [ ] **Core API Functions**: Development of main API wrapper functions
 - [ ] **Authentication Functions**: Complete authentication system
