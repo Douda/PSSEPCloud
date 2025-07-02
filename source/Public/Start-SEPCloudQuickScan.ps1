@@ -1,4 +1,4 @@
-function Start-SepCloudQuickScan
+function Start-SEPCloudQuickScan
 {
 
     <#
@@ -14,7 +14,7 @@ function Start-SepCloudQuickScan
         Start-SepCloudQuickScan -device_ids "u7IcxqPvQKmH47MPinPsFk"
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$true)]
     Param(
         [Alias('deviceId')]
         [string[]]
@@ -50,7 +50,11 @@ function Start-SepCloudQuickScan
         $uri = New-URIString -endpoint ($resources.URI) -id $id
         $uri = Test-QueryParam -querykeys ($resources.Query.Keys) -parameters ((Get-Command $function).Parameters.Values) -uri $uri
         $body = New-BodyString -bodykeys ($resources.Body.Keys) -parameters ((Get-Command $function).Parameters.Values)
-        $result = Submit-Request -uri $uri -header $script:SEPCloudConnection.header -method $($resources.Method) -body $body
+        if ($PSCmdlet.ShouldProcess("Device(s): $($device_ids -join ', ')", "Start Quick Scan")) {
+            $result = Submit-Request -uri $uri -header $script:SEPCloudConnection.header -method $($resources.Method) -body $body
+        } else {
+            return
+        }
         $result = Test-ReturnFormat -result $result -location $resources.Result
         $result = Set-ObjectTypeName -TypeName $resources.ObjectTName -result $result
         return $result
