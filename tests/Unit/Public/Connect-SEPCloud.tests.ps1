@@ -5,7 +5,7 @@ BeforeAll {
     if (-not (Get-Module -Name $script:moduleName -ListAvailable))
     {
         # Redirect all streams to $null, except the error stream (stream 2)
-        & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
+        & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
     }
 
     # Re-import the module using force to get any code changes between runs.
@@ -26,19 +26,24 @@ AfterAll {
 
 Describe Connect-SEPCloud {
     Context 'When called with valid parameters' {
+        BeforeEach {
+            $script:SEPCloudConnection = [PSCustomObject]@{}
+            Mock New-UserAgentString { return 'UserAgentString' }
+        }
+
         It 'should create a valid header with token' {
             # Arrange
             $clientId = 'validClientId'
             $secret = 'validSecret'
             $mockToken = [PSCustomObject]@{ Token_Bearer = 'validToken' }
-            Mock Get-SEPCloudToken  { return $mockToken }
+            Mock Get-SEPCloudToken { return $mockToken }
 
             # Act
             Connect-SEPCloud -clientId $clientId -secret $secret
 
             # Assert
-                        $script:SEPCloudConnection.header.Authorization | Should -Be 'validToken'
-                        $script:SEPCloudConnection.header.'User-Agent' | Should -Be 'UserAgentString'
+            $script:SEPCloudConnection.header.Authorization | Should -Be 'validToken'
+            $script:SEPCloudConnection.header.'User-Agent' | Should -Be 'UserAgentString'
         }
     }
 

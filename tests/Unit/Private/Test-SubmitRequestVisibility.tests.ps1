@@ -1,6 +1,5 @@
 BeforeAll {
-    Mock -CommandName Invoke-SEPCloudWebRequest -MockWith { return "Mocked Web Request" }
-    Mock -CommandName New-QueryURI -MockWith { return "Mocked URI" }
+    Import-Module -Name PSSEPCloud -Force -ErrorAction Stop
 }
 
 Describe "Submit-Request Visibility" {

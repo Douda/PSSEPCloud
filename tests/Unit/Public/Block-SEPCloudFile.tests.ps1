@@ -41,7 +41,7 @@ Describe Block-SEPCloudFile {
                     device_ids = $_
                     OtherProperty = 'other'
                 }
-            } | Block-SEPCloudFile -hash 'test_hash' } | Should -Throw
+            } | Block-SEPCloudFile -hash 'test_hash' } | Should -Throw 'ParameterBindingException'
         }
     }
 

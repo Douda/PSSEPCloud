@@ -9,6 +9,11 @@ function Connect-SEPCloud {
     )
 
     process {
+        # Initialize $script:SEPCloudConnection if it doesn't exist
+        if (-not (Get-Variable -Name SEPCloudConnection -Scope Script -ErrorAction SilentlyContinue)) {
+            $script:SEPCloudConnection = [PSCustomObject]@{}
+        }
+
         # Create User Agent string
         $UserAgentString = New-UserAgentString -UserAgentHash $UserAgent
         $PSBoundParameters.Remove($UserAgent) | Out-Null
@@ -30,19 +35,15 @@ function Connect-SEPCloud {
 
         # if we have a token, add it to the header
         if ($null -ne $token) {
-            $head = @{
+            $script:SEPCloudConnection.header = @{
                 'Authorization' = "$($Token.Token_Bearer)";
-                'User-Agent'    = $UserAgentString#;
-                # 'Host'          = $($script:SEPCloudConnection.BaseURL)
+                'User-Agent'    = $UserAgentString
             }
-            $script:SEPCloudConnection | Add-Member -Type NoteProperty -Name 'header' -Value $head -Force
         } else {
             # If no token, just add User-Agent
-            $head = @{
-                'User-Agent' = $UserAgentString#;
-                # 'Host'          = $($script:SEPCloudConnection.BaseURL)
+            $script:SEPCloudConnection.header = @{
+                'User-Agent' = $UserAgentString
             }
-            $script:SEPCloudConnection | Add-Member -Type NoteProperty -Name 'header' -Value $head -Force
         }
     }
 }

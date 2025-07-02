@@ -4,7 +4,7 @@ BeforeAll {
     # If the module is not found, run the build task 'noop'.
     if (-not (Get-Module -Name $script:moduleName -ListAvailable)) {
         # Redirect all streams to $null, except the error stream (stream 2)
-        & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
+        & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
     }
 
     # Re-import the module using force to get any code changes between runs.
@@ -26,7 +26,7 @@ AfterAll {
 Describe 'Update-AllowListPolicyByFileHash' {
     BeforeAll {
         # Arrange
-        $sha2 = 'some-sha2'
+        $sha2 = 'a'*64 # Dummy SHA-256 hash
         $name = 'some-name'
         $policy_name = 'some-policy-name'
         $version = 1
@@ -79,7 +79,7 @@ Describe 'Update-AllowListPolicyByFileHash' {
 
         It 'should handle invalid input gracefully' {
             # Arrange
-            $sha2 = 'some-sha2'
+            $sha2 = 'a'*64 # Dummy SHA-256 hash
             $name = 'some-name'
 
             # Act & Assert
