@@ -36,7 +36,7 @@ function Move-SEPCloudDevice
         Moves all devices from their identifier (here 123,456,789) to a group from a single API call
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$true)]
     Param(
         # Group ID
         [Parameter(
@@ -77,7 +77,11 @@ function Move-SEPCloudDevice
         $uri = New-URIString -endpoint ($resources.URI) -id $groupId
         $uri = Test-QueryParam -querykeys ($resources.Query.Keys) -parameters ((Get-Command $function).Parameters.Values) -uri $uri
         $body = New-BodyString -bodykeys ($resources.Body.Keys) -parameters ((Get-Command $function).Parameters.Values)
-        $result = Submit-Request -uri $uri -header $script:SEPCloudConnection.header -method $($resources.Method) -body $body
+        if ($PSCmdlet.ShouldProcess("Device(s): $($deviceId -join ', ')", "Move to Group ID: $groupId")) {
+            $result = Submit-Request -uri $uri -header $script:SEPCloudConnection.header -method $($resources.Method) -body $body
+        } else {
+            return
+        }
         $result = Test-ReturnFormat -result $result -location $resources.Result
         $result = Set-ObjectTypeName -TypeName $resources.ObjectTName -result $result
         return $result
