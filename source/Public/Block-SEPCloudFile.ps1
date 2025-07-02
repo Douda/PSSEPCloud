@@ -50,19 +50,21 @@ function Block-SEPCloudFile
 
     process
     {
-        # changing "Host" header specifically for this query, otherwise 500
-        $script:SEPCloudConnection.header += @{ 'Host' = $script:SEPCloudConnection.BaseURL }
+        if ($PSCmdlet.ShouldProcess("File with hash '$sha2'", "Block file globally")) {
+            # changing "Host" header specifically for this query, otherwise 500
+            $script:SEPCloudConnection.header += @{ 'Host' = $script:SEPCloudConnection.BaseURL }
 
-        $uri = New-URIString -endpoint ($resources.URI) -id $id
-        $uri = Test-QueryParam -querykeys ($resources.Query.Keys) -parameters ((Get-Command $function).Parameters.Values) -uri $uri
-        $body = New-BodyString -bodykeys ($resources.Body.Keys) -parameters ((Get-Command $function).Parameters.Values)
-        $result = Submit-Request -uri $uri -header $script:SEPCloudConnection.header -method $($resources.Method) -body $body
-        $result = Test-ReturnFormat -result $result -location $resources.Result
-        $result = Set-ObjectTypeName -TypeName $resources.ObjectTName -result $result
+            $uri = New-URIString -endpoint ($resources.URI) -id $id
+            $uri = Test-QueryParam -querykeys ($resources.Query.Keys) -parameters ((Get-Command $function).Parameters.Values) -uri $uri
+            $body = New-BodyString -bodykeys ($resources.Body.Keys) -parameters ((Get-Command $function).Parameters.Values)
+            $result = Submit-Request -uri $uri -header $script:SEPCloudConnection.header -method $($resources.Method) -body $body
+            $result = Test-ReturnFormat -result $result -location $resources.Result
+            $result = Set-ObjectTypeName -TypeName $resources.ObjectTName -result $result
 
-        # removing the "Host" header specifically for this query, otherwise 500
-        $script:SEPCloudConnection.header.remove('Host')
+            # removing the "Host" header specifically for this query, otherwise 500
+            $script:SEPCloudConnection.header.remove('Host')
 
-        return $result
+            return $result
+        }
     }
 }
