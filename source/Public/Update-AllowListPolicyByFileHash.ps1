@@ -20,7 +20,7 @@ function Update-AllowListPolicyByFileHash {
     .PARAMETER name
     The name of the file
     #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$true)]
     param (
         $policy_uid,
         $version,
@@ -69,7 +69,11 @@ function Update-AllowListPolicyByFileHash {
         $body = New-NestedBodyString -bodyStructure ($resources.Body) -parameterValues $paramsHash
 
         # Submit the request & format the result
-        $result = Submit-Request -uri $uri -header $script:SEPCloudConnection.header -method $($resources.Method) -body $body
+        if ($PSCmdlet.ShouldProcess("Policy: $policy_name (Hash: $sha2)", "Update Allow List Policy with File Hash")) {
+            $result = Submit-Request -uri $uri -header $script:SEPCloudConnection.header -method $($resources.Method) -body $body
+        } else {
+            return
+        }
         $result = Test-ReturnFormat -result $result -location $resources.Result
         $result = Set-ObjectTypeName -TypeName $resources.ObjectTName -result $result
 
