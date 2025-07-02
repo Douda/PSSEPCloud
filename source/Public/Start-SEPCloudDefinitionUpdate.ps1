@@ -14,7 +14,7 @@ function Start-SEPCloudDefinitionUpdate
         https://github.com/Douda/PSSymantecCloud
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$true)]
     Param(
         [Alias('deviceId')]
         [string[]]
@@ -55,7 +55,11 @@ function Start-SEPCloudDefinitionUpdate
         $uri = New-URIString -endpoint ($resources.URI) -id $id
         $uri = Test-QueryParam -querykeys ($resources.Query.Keys) -parameters ((Get-Command $function).Parameters.Values) -uri $uri
         $body = New-BodyString -bodykeys ($resources.Body.Keys) -parameters ((Get-Command $function).Parameters.Values)
-        $result = Submit-Request -uri $uri -header $script:SEPCloudConnection.header -method $($resources.Method) -body $body
+        if ($PSCmdlet.ShouldProcess("Device(s): $($device_ids -join ', ')", "Start Definition Update")) {
+            $result = Submit-Request -uri $uri -header $script:SEPCloudConnection.header -method $($resources.Method) -body $body
+        } else {
+            return
+        }
         $result = Test-ReturnFormat -result $result -location $resources.Result
         $result = Set-ObjectTypeName -TypeName $resources.ObjectTName -result $result
 
