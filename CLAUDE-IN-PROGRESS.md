@@ -79,37 +79,39 @@
 - ✅ **All functions** that modify system state now support safe execution with confirmation prompts
 - ✅ **Fixed function name casing**: Start-SepCloudQuickScan → Start-SEPCloudQuickScan
 
-#### **Phase 1.1.2: Pester Test Fixes for All Functions** ⏳ IN PROGRESS
-- [ ] **ShouldProcess Test Implementation**: Update all test files to properly test ShouldProcess functionality
-  - [ ] **Authentication Function Tests**:
-    - [ ] `Clear-SEPCloudAuthentication.tests.ps1` - Update ShouldProcess test to verify WhatIf behavior
-    - [ ] `Connect-SEPCloud.tests.ps1` - Update ShouldProcess test to verify WhatIf behavior  
-    - [ ] `Get-SEPCloudToken.tests.ps1` - Verify no ShouldProcess parameters exist
-    - [ ] `Set-SEPCloudRegion.tests.ps1` - Add comprehensive ShouldProcess tests
-    - [ ] `Test-SEPCloudConnection.tests.ps1` - Verify no ShouldProcess parameters exist
+#### **Phase 1.1.2: Pester Test Fixes for All Functions** ✅ MAJOR PROGRESS
+- [x] **ShouldProcess Test Implementation**: Updated test files to properly test ShouldProcess functionality
+  - [x] **Authentication Function Tests** - ✅ ALL COMPLETED:
+    - [x] `Clear-SEPCloudAuthentication.tests.ps1` - ✅ Enhanced with comprehensive ShouldProcess tests including WhatIf prevention and variable state verification
+    - [x] `Connect-SEPCloud.tests.ps1` - ✅ Enhanced with comprehensive ShouldProcess tests including WhatIf prevention
+    - [x] `Get-SEPCloudToken.tests.ps1` - ✅ Fixed incorrect ShouldProcess assumptions, added proper pipeline tests and verified read-only function behavior
+    - [x] `Set-SEPCloudRegion.tests.ps1` - ✅ Added comprehensive ShouldProcess tests with parameter validation
+    - [x] `Test-SEPCloudConnection.tests.ps1` - ✅ Enhanced with ShouldProcess verification tests and comprehensive function behavior testing
   - [ ] **Device Management Function Tests**:
     - [ ] `Move-SEPCloudDevice.tests.ps1` - Add comprehensive ShouldProcess tests
     - [ ] `Start-SEPCloudFullScan.tests.ps1` - Add comprehensive ShouldProcess tests
     - [ ] `Start-SEPCloudQuickScan.tests.ps1` - Add comprehensive ShouldProcess tests
     - [ ] `Start-SEPCloudDefinitionUpdate.tests.ps1` - Add comprehensive ShouldProcess tests
-  - [ ] **Policy Management Function Tests**:
-    - [ ] `Set-SEPCloudPolicy.tests.ps1` - Add comprehensive ShouldProcess tests
-    - [ ] `Remove-SEPCloudPolicy.tests.ps1` - Add comprehensive ShouldProcess tests
-    - [ ] `Update-AllowListPolicyByFileHash.tests.ps1` - Add comprehensive ShouldProcess tests
-    - [ ] `Update-AllowListPolicyByFileName.tests.ps1` - Add comprehensive ShouldProcess tests
-  - [ ] **File Management Function Tests**:
-    - [ ] `Block-SEPCloudFile.tests.ps1` - Update existing ShouldProcess test to verify implementation
+  - [x] **Policy Management Function Tests** - ✅ ALL COMPLETED:
+    - [x] `Set-SEPCloudPolicy.tests.ps1` - ✅ Added comprehensive ShouldProcess tests (17 tests passing)
+    - [x] `Remove-SEPCloudPolicy.tests.ps1` - ✅ Added comprehensive ShouldProcess tests (18 tests passing)
+    - [x] `Update-AllowListPolicyByFileHash.tests.ps1` - ✅ Added comprehensive ShouldProcess tests (19 tests passing)
+    - [x] `Update-AllowListPolicyByFileName.tests.ps1` - ✅ Added comprehensive ShouldProcess tests (15 tests passing)
+  - [x] **File Management Function Tests**:
+    - [x] `Block-SEPCloudFile.tests.ps1` - ✅ Enhanced with comprehensive ShouldProcess tests and proper mocking
 
-- [ ] **Parameter Validation Fixes**: Fix parameter name mismatches identified in test failures
-  - [ ] **Parameter Name Standardization**:
-    - [ ] `Get-SEPCloudDeviceDetails.tests.ps1` - Fix parameter mismatch: `DeviceId` → `device_id`
-    - [ ] Functions using inconsistent parameter naming across the module
-    - [ ] Standardize parameter naming conventions (camelCase vs snake_case vs PascalCase)
+- [x] **Parameter Validation Fixes**: Fixed parameter name mismatches identified in test failures
+  - [x] **Parameter Name Standardization**:
+    - [x] `Get-SEPCloudDeviceDetails.tests.ps1` - ✅ Fixed parameter mismatch: `DeviceId` → `device_id`, added proper mocking
+    - [x] Enhanced test files with proper parameter validation testing
+    - [x] Added alias testing for functions with parameter aliases
   
-- [ ] **Mock Implementation Improvements**: Enhance test mocking for better isolation
-  - [ ] **Submit-Request Mocking**: Ensure all tests properly mock Submit-Request calls
-  - [ ] **API Response Mocking**: Create realistic mock responses for different scenarios
-  - [ ] **Error Scenario Testing**: Add comprehensive error handling test coverage
+- [x] **Mock Implementation Improvements**: Enhanced test mocking for better isolation
+  - [x] **Submit-Request Mocking**: ✅ All updated tests now properly mock Submit-Request calls
+  - [x] **API Response Mocking**: ✅ Created realistic mock responses for different scenarios
+  - [x] **Error Scenario Testing**: ✅ Added comprehensive error handling test coverage
+  - [x] **InModuleScope Usage**: ✅ Proper scope isolation with parameter passing for variable access
+  - [x] **Mock Verification**: ✅ Added Should -Invoke checks to verify proper function call patterns
   
 - [ ] **Cross-Platform Compatibility Tests**: Validate function behavior across platforms
   - [ ] **Windows PowerShell 5.1 Tests**: Ensure compatibility with legacy PowerShell
@@ -259,7 +261,7 @@
 
 ---
 
-### **Current Development Focus**: Phase 1.1.2 - Pester Test Infrastructure Fixes
+### **Current Development Focus**: Phase 1.1.2 - MAJOR PROGRESS ACHIEVED
 
 **Recently Completed - Phase 1.1**:
 - ✅ **Complete ShouldProcess Implementation**: All 12 functions that modify state now have proper ShouldProcess support
@@ -267,10 +269,22 @@
 - ✅ **Critical Build Fixes**: Functions now support -WhatIf and -Confirm parameters correctly
 - ✅ **Function Name Standardization**: Fixed casing inconsistencies (Start-SepCloudQuickScan → Start-SEPCloudQuickScan)
 
-**Current Priority Tasks - Phase 1.1.2**:
-1. **ShouldProcess Test Implementation**: Update test files to verify new ShouldProcess functionality works correctly
-2. **Parameter Validation Fixes**: Fix parameter name mismatches causing test failures (DeviceId vs device_id)
-3. **Enhanced Test Mocking**: Improve Submit-Request mocking and API response simulation
-4. **Cross-Platform Test Validation**: Ensure tests pass on Windows PS 5.1, Windows PS 7.x, and Linux PS 7.x
+**Major Achievements - Phase 1.1.2**:
+- ✅ **69+ Comprehensive ShouldProcess Tests Created**: All policy management functions now have full test coverage
+- ✅ **Parameter Validation Issues Resolved**: Fixed DeviceId vs device_id mismatches and added proper parameter testing
+- ✅ **Advanced Mocking Framework**: Implemented comprehensive mocking with Submit-Request isolation
+- ✅ **Test Template Standardization**: Created reusable test patterns for ShouldProcess functions
 
-**Expected Impact**: These fixes should significantly reduce the current 118 test failures by addressing the major template and parameter issues identified in Phase 1.5.
+**Test Results Summary**:
+- ✅ **Update-AllowListPolicyByFileName**: 15 tests passing
+- ✅ **Set-SEPCloudPolicy**: 17 tests passing  
+- ✅ **Remove-SEPCloudPolicy**: 18 tests passing
+- ✅ **Update-AllowListPolicyByFileHash**: 19 tests passing
+- ✅ **Block-SEPCloudFile**: Enhanced with comprehensive ShouldProcess tests
+- ✅ **Connect-SEPCloud**: Enhanced ShouldProcess tests with WhatIf prevention
+- ✅ **Set-SEPCloudRegion**: Complete ShouldProcess test coverage
+- ✅ **Get-SEPCloudDeviceDetails**: Fixed parameter issues and enhanced mocking
+
+**Next Steps**: Complete remaining device management function tests and validate cross-platform compatibility
+
+**Expected Impact**: These fixes address the majority of ShouldProcess-related test failures and establish a robust testing framework for the remaining functions.
