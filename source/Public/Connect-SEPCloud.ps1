@@ -34,15 +34,19 @@ function Connect-SEPCloud {
         }
 
         # if we have a token, add it to the header
-        if ($null -ne $token) {
-            $script:SEPCloudConnection.header = @{
-                'Authorization' = "$($Token.Token_Bearer)";
-                'User-Agent'    = $UserAgentString
-            }
-        } else {
-            # If no token, just add User-Agent
-            $script:SEPCloudConnection.header = @{
-                'User-Agent' = $UserAgentString
+        if ($PSCmdlet.ShouldProcess("SEP Cloud Connection", "Establish connection with authentication")) {
+            if ($null -ne $token) {
+                $script:SEPCloudConnection.header = @{
+                    'Authorization' = "$($Token.Token_Bearer)";
+                    'User-Agent'    = $UserAgentString
+                }
+                Write-Verbose "Connection established with authentication token"
+            } else {
+                # If no token, just add User-Agent
+                $script:SEPCloudConnection.header = @{
+                    'User-Agent' = $UserAgentString
+                }
+                Write-Verbose "Connection established without authentication token"
             }
         }
     }
