@@ -3,11 +3,20 @@
 ## Description
 Develop a PowerShell module named PSSEPCloud that serves as an API wrapper around the Symantec Endpoint Security (SES) API. The module should support Windows PowerShell 5.1 and PowerShell 7.x on both Windows and Linux platforms. The module will use Git for version control, GitVersion for versioning, and GitHub Actions for CI/CD.
 
+## Standard Workflow
+1. First think through the problem, read the codebase for relevant files, and write a plan to tasks/todo.md.
+2. The plan should have a list of todo items that you can check off as you complete them
+3. Before you begin working, check in with me and I will verify the plan.
+4. Then, begin working on the todo items, marking them as complete as you go.
+5. Please every step of the way just give me a high level explanation of what changes you made
+6. Make every task and code change you do as simple as possible. We want to avoid making any massive or complex changes. Every change should impact as little code as possible. Everything is about simplicity.
+7. Finally, add a review section to the [todo.md](http://todo.md/) file with a summary of the changes you made and any other relevant information.
+
 ## Project progression tracking
 **MANDATORY REQUIREMENTS:**
-- Prior to any changes, update the `CLAUDE-IN-PROGRESS.md` file with the planned changes and add checkboxes
-- Between every minor step, update `CLAUDE-IN-PROGRESS.md` with current progress
-- **AFTER EVERY COMPLETED STEP: Update both `CLAUDE.md` and `CLAUDE-IN-PROGRESS.md` with checked [x] boxes**
+- Prior to any changes, update the [`CLAUDE-IN-PROGRESS.md`](./CLAUDE-IN-PROGRESS.md) file with the planned changes and add checkboxes
+- Between every minor step, update [`CLAUDE-IN-PROGRESS.md`](./CLAUDE-IN-PROGRESS.md) with current progress
+- **AFTER EVERY COMPLETED STEP: Update both [`CLAUDE.md`](./CLAUDE.md) and [`CLAUDE-IN-PROGRESS.md`](./CLAUDE-IN-PROGRESS.md) with checked [x] boxes**
 - **NO STEP IS CONSIDERED COMPLETE until both files have been updated with [x] checkboxes**
 - Both files must always be synchronized with the same completion status
 - This checkbox tracking is mandatory for the entire project lifecycle
@@ -78,8 +87,8 @@ here is the list of all the API endpoints we have access to :
     - Add whitespace around pipe operators `|`
     - Trim unnecessary whitespace around pipes
     - Enable PowerShell Script Analyzer compliance
-  - All public functions should follow the template pattern from: https://raw.githubusercontent.com/Douda/PSSEPCloud/refs/heads/main/source/Public/Get-SEPCloudDevice.ps1
-  - Use centralized API data repository pattern from: https://raw.githubusercontent.com/Douda/PSSEPCloud/refs/heads/main/source/Private/Get-SEPCloudAPIData.ps1
+  - All public functions should follow the template pattern similar to this function : https://raw.githubusercontent.com/Douda/PSSEPCloud/refs/heads/main/source/Public/Get-SEPCloudDevice.ps1
+  - Use centralized API data repository pattern similar to this function: https://raw.githubusercontent.com/Douda/PSSEPCloud/refs/heads/main/source/Private/Get-SEPCloudAPIData.ps1
 
 ### API Design Patterns (Based on Rubrik SDK Analysis)
   - **Module Organization**: Use clear separation between Public, Private, ObjectDefinitions, and OptionsDefault folders
@@ -265,16 +274,16 @@ echo 'export PATH="$PATH:/home/douda/.dotnet/tools"' >> ~/.bash_profile
 ```
 
 **WSL Development Environment Validation Results:**
-- ✅ PowerShell 7.5.1 - Working
-- ✅ Git 2.43.0 - Working  
-- ✅ .NET SDK 8.0.117 - Working
-- ✅ GitVersion 5.12.0 - Working and configured
-- ✅ Sampler build framework - Working (`./build.ps1` successful)
-- ✅ Pester 5.7.1 testing - Working (44 tests passed, 100% coverage)
-- ✅ GitHub Actions CI/CD pipeline - Configured for multi-platform testing
+- [ ] PowerShell 7.5.1 - Working
+- [ ] Git 2.43.0 - Working  
+- [ ] .NET SDK 8.0.117 - Working
+- [ ] GitVersion 5.12.0 - Working and configured
+- [ ] Sampler build framework - Working (`./build.ps1` successful)
+- [ ] Pester 5.7.1 testing - Working (44 tests passed, 100% coverage)
+- [ ] GitHub Actions CI/CD pipeline - Configured for multi-platform testing
 
 ## Authentication Credentials
-Authentication credentials are stored in `CLAUDE-CREDENTIALS.md` (excluded from version control for security).
+Authentication credentials are stored in [`CLAUDE-CREDENTIALS.md`](./CLAUDE-CREDENTIALS.md) (excluded from version control for security).
 
 ## Development Plan & Progress Tracking
 
@@ -306,10 +315,9 @@ This includes:
 - Project status changes (e.g., project completion, major blockers)
 - Milestone achievements (e.g., "Submit-SESRequest 100% functional", "Test framework proven")
 
-**🔧 CURRENT STATUS**: Phase 1.1 Completed - Comprehensive Function Infrastructure Overhaul
+**🔧 CURRENT STATUS**: Phase 1.1.2 Authentication Tests - ✅ COMPLETED
 - **CI/CD Pipeline**: Successfully stabilized ✅ (All platforms: Ubuntu PS7, Windows PS5.1, Windows PS7)
-- **Function Infrastructure**: ✅ COMPLETED - All 37 functions audited with proper ShouldProcess implementation
-- **ShouldProcess Support**: ✅ 12 functions now have proper -WhatIf and -Confirm parameter support
-- **Test Status**: 62 passed / 118 failed (Foundation established for Phase 1.1.2 test fixes)
-- **Current Phase**: Phase 1.1.2 - Pester test infrastructure fixes and parameter validation
-- **Next Priority**: Update Pester tests to support new ShouldProcess functionality and fix parameter mismatches
+- **Authentication Function Tests**: ✅ ALL 5 FUNCTIONS COMPLETED with comprehensive ShouldProcess coverage
+- **Recent Achievements**: ✅ Clear-SEPCloudAuthentication, ✅ Get-SEPCloudToken pipeline fixes, ✅ Test-SEPCloudConnection enhanced testing
+- **Test Quality**: Enhanced mocking, variable state verification, and proper read-only function validation
+- **Next Priority**: Complete device management function tests (4 remaining functions)
