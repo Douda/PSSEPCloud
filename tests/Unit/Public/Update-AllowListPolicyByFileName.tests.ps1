@@ -4,7 +4,7 @@ BeforeAll {
     # If the module is not found, run the build task 'noop'.
     if (-not (Get-Module -Name $script:moduleName -ListAvailable)) {
         # Redirect all streams to $null, except the error stream (stream 2)
-        & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
+        & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
     }
 
     # Re-import the module using force to get any code changes between runs.
@@ -23,7 +23,7 @@ AfterAll {
     Remove-Module -Name $script:moduleName
 }
 
-Describe Get-Something {
+Describe Update-AllowListPolicyByFileName {
     Context 'When called with valid parameters' {
         BeforeAll {
             # Mock the necessary functions
@@ -113,7 +113,7 @@ Describe Get-Something {
                             )
                         }
                     }
-                } | ConvertTo-Json -Depth 100
+                            } | Update-AllowListPolicyByFileName
 
                 $expectedQuery = @{
                     name           = "Allow list policy 1"
@@ -128,6 +128,7 @@ Describe Get-Something {
                 }
 
                 $result = Update-AllowListPolicyByFileName -policy_uid '12345678-1234-1234-1234-123456789123' -version '1' -path 'C:\test\exception.exe' -features @('AUTO_PROTECT', 'BEHAVIORAL_ANALYSIS')
+                $body = $script:submitRequestParams[0].Body | ConvertTo-Json -Depth 100
                 $body | Should -BeExactly $expectedJson
                 $result | Should -BeLike $expectedQuery
             }
