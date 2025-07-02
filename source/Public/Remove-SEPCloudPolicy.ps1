@@ -27,7 +27,7 @@ function Remove-SEPCloudPolicy
         Removes the latest version of the SEP Cloud policy named "My Policy" to the device group with ID "123456" at the location "Default"
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$true)]
     param (
         $policyName,
 
@@ -85,7 +85,11 @@ function Remove-SEPCloudPolicy
         $uri = New-URIString -endpoint ($resources.URI) -id $id
         $uri = Test-QueryParam -querykeys ($resources.Query.Keys) -parameters ((Get-Command $function).Parameters.Values) -uri $uri
         $body = New-BodyString -bodykeys ($resources.Body.Keys) -parameters ((Get-Command $function).Parameters.Values)
-        $result = Submit-Request -uri $uri -header $script:SEPCloudConnection.header -method $($resources.Method) -body $body
+        if ($PSCmdlet.ShouldProcess("Policy: $policyName (ID: $policyId)", "Remove SEP Cloud Policy")) {
+            $result = Submit-Request -uri $uri -header $script:SEPCloudConnection.header -method $($resources.Method) -body $body
+        } else {
+            return
+        }
         $result = Test-ReturnFormat -result $result -location $resources.Result
         $result = Set-ObjectTypeName -TypeName $resources.ObjectTName -result $result
 
