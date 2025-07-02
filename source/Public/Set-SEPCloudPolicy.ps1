@@ -30,7 +30,7 @@ function Set-SEPCloudPolicy
         Apply the version 2 of the SEP Cloud policy named "My Policy" to the device group with ID 123456 at the location Default
     #>
 
-    [CmdletBinding(DefaultParameterSetName = "byName")]
+    [CmdletBinding(DefaultParameterSetName = "byName", SupportsShouldProcess=$true)]
     Param(
         [Parameter(ParameterSetName = "byName")]
         $policyName,
@@ -88,9 +88,12 @@ function Set-SEPCloudPolicy
         $uri = New-URIString -endpoint ($resources.URI) -id @($policyId, $policyVersion)
         $uri = Test-QueryParam -querykeys ($resources.Query.Keys) -parameters ((Get-Command $function).Parameters.Values) -uri $uri
         $body = New-BodyString -bodykeys ($resources.Body.Keys) -parameters ((Get-Command $function).Parameters.Values)
-        $result = Submit-Request -uri $uri -header $script:SEPCloudConnection.header -method $($resources.Method) -body $body
-        $result = Test-ReturnFormat -result $result -location $resources.Result
-        $result = Set-ObjectTypeName -TypeName $resources.ObjectTName -result $result
-        return $result
+        
+        if ($PSCmdlet.ShouldProcess("Policy ID '$policyId' Version '$policyVersion'", "Apply policy to location '$location'")) {
+            $result = Submit-Request -uri $uri -header $script:SEPCloudConnection.header -method $($resources.Method) -body $body
+            $result = Test-ReturnFormat -result $result -location $resources.Result
+            $result = Set-ObjectTypeName -TypeName $resources.ObjectTName -result $result
+            return $result
+        }
     }
 }
