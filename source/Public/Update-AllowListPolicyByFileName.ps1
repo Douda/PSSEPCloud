@@ -26,6 +26,7 @@ function Update-AllowListPolicyByFileName {
     adds file exception "C:\test\exception.exe" to the allow list policy with all the supported features
     This time no version is provided, by default the latest version is used
     #>
+    [CmdletBinding(SupportsShouldProcess=$true)]
     param (
         $policy_uid,
         $version,
@@ -97,10 +98,12 @@ function Update-AllowListPolicyByFileName {
         $body = New-NestedBodyString -bodyStructure $resources.Body -parameterValues $paramsHash
 
         # Submit the request & format the result
-        $result = Submit-Request -uri $uri -header $script:SEPCloudConnection.header -method $($resources.Method) -body $body
-        $result = Test-ReturnFormat -result $result -location $resources.Result
-        $result = Set-ObjectTypeName -TypeName $resources.ObjectTName -result $result
+        if ($PSCmdlet.ShouldProcess("Policy '$policy_uid'", "Add filename '$path' to allowlist")) {
+            $result = Submit-Request -uri $uri -header $script:SEPCloudConnection.header -method $($resources.Method) -body $body
+            $result = Test-ReturnFormat -result $result -location $resources.Result
+            $result = Set-ObjectTypeName -TypeName $resources.ObjectTName -result $result
 
-        return $result
+            return $result
+        }
     }
 }
