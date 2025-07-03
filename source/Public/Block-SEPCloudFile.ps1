@@ -50,7 +50,7 @@ function Block-SEPCloudFile
 
     process
     {
-        if ($PSCmdlet.ShouldProcess("File with hash '$sha2'", "Block file globally")) {
+        if ($PSCmdlet.ShouldProcess("File with hash '$hash'", "Block file globally")) {
             # changing "Host" header specifically for this query, otherwise 500
             $script:SEPCloudConnection.header += @{ 'Host' = $script:SEPCloudConnection.BaseURL }
 
