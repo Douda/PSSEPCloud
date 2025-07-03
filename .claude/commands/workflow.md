@@ -52,7 +52,7 @@ This command will automatically execute all 5 CLAUDE agents in the correct seque
 ### 6. UPDATER - Version Control (⏱️ 5-10 min)
 **Invokes**: `/updater` (reads WORK.md Phase 5)
 - Creates detailed conventional commit
-- Commits to test-github-actions branch
+- Commits to CLAUDE-dev-subagents branch
 - Provides deployment confirmation
 - **Output**: Clean git commit ready for PR
 

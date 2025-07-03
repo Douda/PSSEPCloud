@@ -126,7 +126,7 @@ Create a comprehensive WORK.md file with this exact structure:
 - Type: [fix/feat/docs/test]
 - Scope: [relevant area]
 - Message: "[clear description of changes]"
-- Branch: test-github-actions
+- Branch: CLAUDE-dev-subagents
 ```
 
 ## 🎯 SOLUTION PRINCIPLES
