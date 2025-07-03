@@ -97,8 +97,8 @@
     - [x] `Remove-SEPCloudPolicy.tests.ps1` - ✅ Added comprehensive ShouldProcess tests (18 tests passing)
     - [x] `Update-AllowListPolicyByFileHash.tests.ps1` - ✅ Added comprehensive ShouldProcess tests (19 tests passing)
     - [x] `Update-AllowListPolicyByFileName.tests.ps1` - ✅ Added comprehensive ShouldProcess tests (15 tests passing)
-  - [x] **File Management Function Tests**:
-    - [x] `Block-SEPCloudFile.tests.ps1` - ✅ Enhanced with comprehensive ShouldProcess tests and proper mocking
+  - [x] **File Management Function Tests** - ✅ COMPLETED:
+    - [x] `Block-SEPCloudFile.tests.ps1` - ✅ Fixed variable name error ($sha2 → $hash), enhanced with comprehensive ShouldProcess tests and proper mocking (4 tests passing)
 
 - [x] **Parameter Validation Fixes**: Fixed parameter name mismatches identified in test failures
   - [x] **Parameter Name Standardization**:
@@ -258,6 +258,52 @@
 - **Last Major Update**: Phase 1.5 completion and Phase 2 test infrastructure improvements
 - **Current Phase**: Phase 1 (Core Infrastructure Implementation) - Function inventory and validation
 - **Next Major Milestone**: Complete Phase 1 function inventory and cross-platform test validation
+
+---
+
+### Build and Test Errors
+
+**Test Run Summary (2025-07-02)**
+
+*   **Total Tests:** 189
+*   **Passed:** 75
+*   **Failed:** 114
+
+**Summary of Failures:**
+
+The test run revealed a significant number of failures, primarily concentrated in the public functions. The private functions, for the most part, passed their tests successfully. The errors can be categorized as follows:
+
+*   **Parameter Binding and `ShouldProcess` Errors:**
+    *   Many tests failed due to `ParameterBindingException`, indicating that mandatory parameters were not being provided or that parameter names in the test files do not match the function definitions (e.g., `DeviceId` vs. `device_id`).
+    *   Numerous functions are failing `ShouldProcess` tests, either by not declaring `SupportsShouldProcess` or by not correctly handling `-WhatIf` and `-Confirm`.
+
+*   **Pipeline Input Failures:**
+    *   Several functions are not correctly handling pipeline input, both by value and by property name. Tests are failing because the functions are either not designed to accept pipeline input or are not correctly processing the piped objects.
+
+*   **API Mocking and HTTP Errors:**
+    *   A large number of tests are failing with HTTP 400 (Bad Request), 403 (Forbidden), and 404 (Not Found) errors. This suggests that the mocking for `Submit-Request` or `Invoke-SEPCloudWebRequest` is incomplete or incorrect, and the tests are making live (and failing) web requests instead of using mocked data.
+
+*   **Assertion and Logic Failures:**
+    *   Some tests are failing due to incorrect assertions. For example, tests expect a certain number of objects to be returned, but the actual count is different. This could be due to mocking issues or logic errors in the functions themselves.
+    - `Get-SEPCloudComponentType`: Expected 1000, but got 3514.
+    - `Get-SEPCloudDevice`: Expected 10, but got 0.
+    - `Get-SEPCloudGroup`: Expected 1, but got 7.
+    - `Get-SEPCloudIncidents`: Expected 1, but got 0.
+    - `Get-SEPCloudPolicesSummary`: Expected 1, but got 25.
+    - `Get-SEPCloudTargetRules`: Expected 1, but got 2.
+
+*   **Private Function Visibility:**
+    *   The tests for `Submit-Request` are failing because the function is not visible to the test script. This indicates a module export or scoping issue.
+
+**Next Steps:**
+
+The immediate priority is to address these test failures. A systematic approach is required, starting with the most common and impactful issues:
+
+1.  **Fix `Submit-Request` Mocking:** Ensure that all tests properly mock `Submit-Request` to prevent live API calls and provide consistent, expected results.
+2.  **Standardize Parameters:** Review and standardize all parameter names across the module and test files.
+3.  **Correct `ShouldProcess` Implementation:** Ensure all state-modifying functions correctly implement `ShouldProcess`.
+4.  **Address Pipeline Input:** Fix or add pipeline input handling for all relevant functions.
+5.  **Review and Fix Assertions:** Once the mocking and basic function behavior are corrected, review and fix the test assertions to match the expected output.
 
 ---
 
